@@ -1,0 +1,95 @@
+Zilog eZ80 Macro Assembler Version 4.3 (19073001)                                   16-Apr-23     03:44:57     page:   1
+
+
+PC     Object              I  Line    Source 
+                           A     1    ; File:		agon512k.asm
+                           A     2    ; Purpose:	Use Agon 512KB external RAM in BASIC
+                           A     3    ; Copyright (C) 2023 by Curtis Whitley
+                           A     4    ;
+                           A     5    ; MIT License
+                           A     6    ;
+                           A     7    ; Permission is hereby granted, free of charge, to any person obtaining a copy
+                           A     8    ; of this software and associated documentation files (the "Software"), to deal
+                           A     9    ; in the Software without restriction, including without limitation the rights
+                           A    10    ; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                           A    11    ; copies of the Software, and to permit persons to whom the Software is
+                           A    12    ; furnished to do so, subject to the following conditions:
+                           A    13    ;
+                           A    14    ; The above copyright notice and this permission notice shall be included in all
+                           A    15    ; copies or substantial portions of the Software.
+                           A    16    ;
+                           A    17    ; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                           A    18    ; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                           A    19    ; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                           A    20    ; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                           A    21    ; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                           A    22    ; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                           A    23    ; SOFTWARE.
+                           A    24    
+                           A    25    
+                           A    26    		XDEF	src_address
+                           A    27    		XDEF	dst_address
+                           A    28    		XDEF	block_size
+                           A    29    		XDEF	copy_ram
+                           A    30    		XDEF	clear_ram
+                           A    31    
+                           A    32    		DEFINE	HIMEM_SEG, ORG=%FFC0
+                           A    33    		SEGMENT	HIMEM_SEG
+                           A    34    		ALIGN	4
+                           A    35    
+                           A    36    		.ASSUME	ADL = 0
+                           A    37    
+                           A    38    
+00FFC0 000000              A    39    src_address:	DW24	0		; source location within external RAM
+00FFC3 000000              A    40    dst_address:	DW24	0		; destination location within external RAM
+00FFC6 000000              A    41    block_size:		DW24	0		; number of bytes to copy from source to destination
+                           A    42    
+                           A    43    ; Copy a block of RAM from the source address to the destination address.
+                           A    44    ;
+                           A    45    ; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
+                           A    46    ;
+00FFC9                     A    47    copy_ram:
+00FFC9 52CD D5 FF 00       A    48    		call.sil	copy_adl	; perform the copy in ADL mode
+00FFCE C9                  A    49    		ret
+                           A    50    
+                           A    51    ; Clear a block of RAM at the destination address.
+                           A    52    ;
+                           A    53    ; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
+                           A    54    ;
+00FFCF                     A    55    clear_ram:
+00FFCF 52CD E5 FF 00       A    56    		call.sil	clear_adl	; perform the clear in ADL mode
+00FFD4 C9                  A    57    		ret
+                           A    58    
+                           A    59    		.ASSUME ADL = 1
+                           A    60    
+                           A    61    ; Copy a block of RAM from the source address to the destination address.
+                           A    62    ;
+                           A    63    ; This routine runs in ADL mode.
+                           A    64    ;
+00FFD5                     A    65    copy_adl:
+00FFD5 21 C0 FF 00         A    66    		ld		hl, src_address	; get the source address
+00FFD9 11 C3 FF 00         A    67    		ld		de, dst_address	; get the destination address
+00FFDD 01 C6 FF 00         A    68    		ld		bc, block_size	; get the block size to copy
+00FFE1 EDB0                A    69    		ldir					; copy the entire block
+00FFE3 5BC9                A    70    		ret.l
+                           A    71    
+                           A    72    ; Clear a block of RAM at the destination address.
+                           A    73    ;
+                           A    74    ; This routine runs in ADL mode.
+                           A    75    ;
+00FFE5                     A    76    clear_adl:
+00FFE5 11 C3 FF 00         A    77    		ld		de, dst_address	; get the destination address
+00FFE9 01 C6 FF 00         A    78    		ld		bc, block_size	; get the block size to copy
+00FFED 3E00                A    79    		ld		a, 0			; load zero for clearing
+00FFEF                     A    80    loop:
+00FFEF 12                  A    81    		ld		(de), a			; clear one byte
+00FFF0 13                  A    82    		inc		de				; advance pointer
+00FFF1 0B                  A    83    		dec		bc				; decrease byte count
+00FFF2 C2 EF FF 00         A    84    		jp		nz,loop			; back if more to clear
+00FFF6 5BC9                A    85    		ret.l
+                           A    86    
+
+
+Errors: 0
+Warnings: 0
+Lines Assembled: 87
