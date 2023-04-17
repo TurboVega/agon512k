@@ -29,7 +29,8 @@
 		XDEF	copy_ram
 		XDEF	clear_ram
 
-		DEFINE	HIMEM_SEG, ORG=%FFC0
+; BASIC uses HIMEM value of &FF00, so we choose enough room below that.
+		DEFINE	HIMEM_SEG, ORG=%FEA0
 		SEGMENT	HIMEM_SEG
 		ALIGN	4
 
@@ -37,15 +38,22 @@
 
 
 src_address:	DW24	0		; source location within external RAM
+				DB		0		; MSB of 32-bit value, ignored
 dst_address:	DW24	0		; destination location within external RAM
+				DB		0		; MSB of 32-bit value, ignored
 block_size:		DW24	0		; number of bytes to copy from source to destination
+				DB		0		; MSB of 32-bit value, ignored
+byte_value:		DB		0		; byte value used to fill memory
+				DW24    0       ; Upper 24 bits of 32-bit value, ignored.
 
 ; Copy a block of RAM from the source address to the destination address.
 ;
 ; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
 ;
 copy_ram:
+		stmix					; enable mixed mode operation
 		call.sil	copy_adl	; perform the copy in ADL mode
+		rsmix					; disable mixed mode operation
 		ret
 
 ; Clear a block of RAM at the destination address.
@@ -53,7 +61,21 @@ copy_ram:
 ; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
 ;
 clear_ram:
-		call.sil	clear_adl	; perform the clear in ADL mode
+		stmix					; enable mixed mode operation
+		ld			a, 0		; load zero for clearing
+		call.sil	fill_adl	; perform the fill in ADL mode
+		rsmix					; disable mixed mode operation
+		ret
+
+; Fill a block of RAM at the destination address with a given byte value.
+;
+; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
+;
+fill_ram:
+		stmix					; enable mixed mode operation
+		ld			a, (byte_value) ; load given value for filling memory
+		call.sil	fill_adl	; perform the clear in ADL mode
+		rsmix					; disable mixed mode operation
 		ret
 
 		.ASSUME ADL = 1
@@ -63,24 +85,22 @@ clear_ram:
 ; This routine runs in ADL mode.
 ;
 copy_adl:
-		ld		hl, src_address	; get the source address
-		ld		de, dst_address	; get the destination address
-		ld		bc, block_size	; get the block size to copy
+		ld		hl, (src_address) ; get the source address
+		ld		de, (dst_address) ; get the destination address
+		ld		bc, (block_size) ; get the block size to copy
 		ldir					; copy the entire block
 		ret.l
 
-; Clear a block of RAM at the destination address.
+; Fill a block of RAM at the destination address with a given byte value.
 ;
-; This routine runs in ADL mode.
+; This routine runs in ADL mode. The byte value is in the A register.
 ;
-clear_adl:
-		ld		de, dst_address	; get the destination address
-		ld		bc, block_size	; get the block size to copy
-		ld		a, 0			; load zero for clearing
+fill_adl:
+		ld		de, (dst_address) ; get the destination address
+		ld		bc, (block_size) ; get the block size to fill
 loop:
 		ld		(de), a			; clear one byte
 		inc		de				; advance pointer
 		dec		bc				; decrease byte count
-		jp		nz,loop			; back if more to clear
+		jp		nz,loop			; back if more to fill
 		ret.l
-
