@@ -1,4 +1,4 @@
-Zilog eZ80 Macro Assembler Version 4.3 (19073001)                                   18-Apr-23     00:58:28     page:   1
+Zilog eZ80 Macro Assembler Version 4.3 (19073001)                                   18-Apr-23     05:45:38     page:   1
 
 
 PC     Object              I  Line    Source 
@@ -52,43 +52,50 @@ PC     Object              I  Line    Source
                            A    48    ; Copy a block of RAM from the source address to the destination address.
                            A    49    ;
 00FEC0                     A    50    copy_ram:
-00FEC0 52CD C6 FE 00       A    51    		call.sil copy_adl		; use ADL mode
-00FEC5 C9                  A    52    		ret
-                           A    53    		.ASSUME ADL = 1
-00FEC6                     A    54    copy_adl:
-00FEC6 2A B0 FE 00         A    55    		ld		hl, (src_address) ; get the source address
-00FECA ED5B B4 FE 00       A    56    		ld		de, (dst_address) ; get the destination address
-00FECF ED4B B8 FE 00       A    57    		ld		bc, (block_size) ; get the block size to copy
-00FED4 EDB0                A    58    		ldir					; copy the entire block
-00FED6 5BC9                A    59    		ret.l
-                           A    60    
-                           A    61    		.ASSUME ADL = 0
-                           A    62    ; Clear a block of RAM at the destination address.
-                           A    63    ;
-00FED8                     A    64    clear_ram:
-00FED8 AF                  A    65    		xor		a				; load zero for clearing
-00FED9 18 03               A    66    		jr		fill			; perform the fill in ADL mode
-                           A    67    
-                           A    68    ; Fill a block of RAM at the destination address with a given byte value.
-                           A    69    ;
-00FEDB                     A    70    fill_ram:
-00FEDB 3A BC FE            A    71    		ld		a, (byte_value) ; load given value for filling memory
-00FEDE                     A    72    fill:
-00FEDE 52CD E4 FE 00       A    73    		call.sil fill_adl		; use ADL mode
-00FEE3 C9                  A    74    		ret
-                           A    75    
-                           A    76    		.ASSUME	ADL = 1
-00FEE4                     A    77    fill_adl:
-00FEE4 ED5B B4 FE 00       A    78    		ld		de, (dst_address) ; get the destination address
-00FEE9 ED4B B8 FE 00       A    79    		ld		bc, (block_size) ; get the block size to fill
-00FEEE                     A    80    fill_loop:
-00FEEE 12                  A    81    		ld		(de), a			; clear one byte
-00FEEF 13                  A    82    		inc		de				; advance pointer
-00FEF0 0B                  A    83    		dec		bc				; decrease byte count
-00FEF1 C2 EE FE 00         A    84    		jp		nz,fill_loop	; back if more to fill
-00FEF5 5BC9                A    85    		ret.l
+                           A    51    	
+00FEC0 5BCD C6 FE 00       A    52    		call.lil copy_adl		; use ADL mode
+00FEC5 C9                  A    53    		ret
+                           A    54    
+                           A    55    		.ASSUME ADL = 1
+                           A    56    
+00FEC6                     A    57    copy_adl:
+00FEC6 2A B0 FE 00         A    58    		ld		hl, (src_address) ; get the source address
+00FECA ED5B B4 FE 00       A    59    		ld		de, (dst_address) ; get the destination address
+00FECF ED4B B8 FE 00       A    60    		ld		bc, (block_size) ; get the block size to copy
+00FED4 EDB0                A    61    		ldir					; copy the entire block
+00FED6 5BC9                A    62    		ret.l
+                           A    63    
+                           A    64    		.ASSUME ADL = 0
+                           A    65    
+                           A    66    ; Clear a block of RAM at the destination address.
+                           A    67    ;
+00FED8                     A    68    clear_ram:
+00FED8 AF                  A    69    		xor		a				; load zero for clearing
+00FED9 18 03               A    70    		jr		fill			; perform the fill in ADL mode
+                           A    71    
+                           A    72    ; Fill a block of RAM at the destination address with a given byte value.
+                           A    73    ;
+00FEDB                     A    74    fill_ram:
+00FEDB 3A BC FE            A    75    		ld		a, (byte_value) ; load given value for filling memory
+00FEDE                     A    76    fill:
+00FEDE 5BCD E4 FE 00       A    77    		call.lil fill_adl		; use ADL mode
+00FEE3 C9                  A    78    		ret
+                           A    79    
+                           A    80    		.ASSUME	ADL = 1
+                           A    81    
+00FEE4                     A    82    fill_adl:
+00FEE4 ED5B B4 FE 00       A    83    		ld		de, (dst_address) ; get the destination address
+00FEE9 ED4B B8 FE 00       A    84    		ld		bc, (block_size) ; get the block size to fill
+00FEEE                     A    85    fill_loop:
+00FEEE 12                  A    86    		ld		(de), a			; clear one byte
+00FEEF 13                  A    87    		inc		de				; advance pointer
+00FEF0 0B                  A    88    		dec		bc				; decrease byte count
+00FEF1 C2 EE FE 00         A    89    		jp		nz,fill_loop	; back if more to fill
+00FEF5 5BC9                A    90    		ret.l
+                           A    91    
+                           A    92    		.ASSUME ADL = 0
 
 
 Errors: 0
 Warnings: 0
-Lines Assembled: 86
+Lines Assembled: 93

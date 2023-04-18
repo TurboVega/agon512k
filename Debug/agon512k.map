@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Tue Apr 18 00:58:28 2023
+DATE:      Tue Apr 18 05:45:38 2023
 PROCESSOR: assembler
 FILES:     .\agon512k.obj         
 
@@ -81,7 +81,7 @@ MY_CODE_SEG        absolute data          C:00FEB0    C:00FEF6       47h
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/18/2023 00:58:28
+Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/18/2023 05:45:38
 
     Name                                           Base         Top      Size
     --------------------------------------- ----------- ----------- ---------
@@ -164,8 +164,8 @@ src_address                       Defined     D:\AgonLight2\agon512k\agon512k.as
 
 OUTPUT CHECKSUM
 ===============
-agon512k.hex         001E9F
-agon512k.lod         001E9F
+agon512k.hex         001EB1
+agon512k.lod         001EB1
 
 
 

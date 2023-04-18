@@ -50,10 +50,10 @@
 1490 PRINT "Copying assembly code above HIMEM"
 1500 DATA &00, &00, &00, &00, &00, &00, &00, &00
 1510 DATA &00, &00, &00, &00, &00, &00, &00, &00
-1520 DATA &52, &CD, &C6, &FE, &00, &C9, &2A, &B0
+1520 DATA &5B, &CD, &C6, &FE, &00, &C9, &2A, &B0
 1530 DATA &FE, &00, &ED, &5B, &B4, &FE, &00, &ED
 1540 DATA &4B, &B8, &FE, &00, &ED, &B0, &5B, &C9
-1550 DATA &AF, &18, &03, &3A, &BC, &FE, &52, &CD
+1550 DATA &AF, &18, &03, &3A, &BC, &FE, &5B, &CD
 1560 DATA &E4, &FE, &00, &C9, &ED, &5B, &B4, &FE
 1570 DATA &00, &ED, &4B, &B8, &FE, &00, &12, &13
 1580 DATA &0B, &C2, &EE, &FE, &00, &5B, &C9

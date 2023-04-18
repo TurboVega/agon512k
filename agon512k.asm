@@ -48,9 +48,12 @@ byte_value:		DB		0		; byte value used to fill memory
 ; Copy a block of RAM from the source address to the destination address.
 ;
 copy_ram:
-		call.sil copy_adl		; use ADL mode
+	
+		call.lil copy_adl		; use ADL mode
 		ret
+
 		.ASSUME ADL = 1
+
 copy_adl:
 		ld		hl, (src_address) ; get the source address
 		ld		de, (dst_address) ; get the destination address
@@ -59,6 +62,7 @@ copy_adl:
 		ret.l
 
 		.ASSUME ADL = 0
+
 ; Clear a block of RAM at the destination address.
 ;
 clear_ram:
@@ -70,10 +74,11 @@ clear_ram:
 fill_ram:
 		ld		a, (byte_value) ; load given value for filling memory
 fill:
-		call.sil fill_adl		; use ADL mode
+		call.lil fill_adl		; use ADL mode
 		ret
 
 		.ASSUME	ADL = 1
+
 fill_adl:
 		ld		de, (dst_address) ; get the destination address
 		ld		bc, (block_size) ; get the block size to fill
@@ -83,3 +88,5 @@ fill_loop:
 		dec		bc				; decrease byte count
 		jp		nz,fill_loop	; back if more to fill
 		ret.l
+
+		.ASSUME ADL = 0
