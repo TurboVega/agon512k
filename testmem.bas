@@ -32,43 +32,43 @@
 1310 PRINT ""
 1320 REM --- memory related constants ---
 1330 PRINT "Initializing various constants"
-1340 mycode%=&FEA0: REM location of assembly code
-1350 buffer%=&EEA0: REM location of my local buffer
+1340 mycode%=&FEB0: REM location of assembly code
+1350 buffer%=&EEB0: REM location of my local buffer
 1360 bufsize%=&1000: REM arbitrary size of my local buffer
-1370 emloc%=&10000: REM location of extended memory (past 64KB)
+1370 emloc%=&50000: REM location of extended memory (past 64KB)
 1380 emsize%=&70000: REM size of extended memory (512KB - 64KB)
-1390 srcaddress%=&FEA0: REM location of source address parameter
-1400 dstaddress%=&FEA4: REM location of destination address parameter
-1410 blocksize%=&FEA8: REM location of block size parameter
-1420 bytevalue%=&FEAC: REM location of byte (fill) value parameter
-1430 copyram%=&FEB0: REM location of RAM copy routine
-1440 clearram%=&FEBA: REM location of RAM clear routine
-1450 fillram%=&FEC6: REM location of RAM fill routine
+1390 srcaddress%=&FEB0: REM location of source address parameter
+1400 dstaddress%=&FEB4: REM location of destination address parameter
+1410 blocksize%=&FEB8: REM location of block size parameter
+1420 bytevalue%=&FEBC: REM location of byte (fill) value parameter
+1430 copyram%=&FEC0: REM location of RAM copy routine
+1440 clearram%=&FED8: REM location of RAM clear routine
+1450 fillram%=&FEDB: REM location of RAM fill routine
 1460 HIMEM=buffer%: REM reserve memory for buffer and code
 1470 REM
 1480 REM --- assembly code ---
 1490 PRINT "Copying assembly code above HIMEM"
 1500 DATA &00, &00, &00, &00, &00, &00, &00, &00
 1510 DATA &00, &00, &00, &00, &00, &00, &00, &00
-1520 DATA &ED, &7D, &52, &CD, &D3, &FE, &00, &ED
-1530 DATA &7E, &C9, &ED, &7D, &3E, &00, &52, &CD
-1540 DATA &E5, &FE, &00, &ED, &7E, &C9, &ED, &7D
-1550 DATA &3A, &AC, &FE, &52, &CD, &E5, &FE, &00
-1560 DATA &ED, &7E, &C9, &2A, &A0, &FE, &00, &ED
-1570 DATA &5B, &A4, &FE, &00, &ED, &4B, &A8, &FE
-1580 DATA &00, &ED, &B0, &5B, &C9, &ED, &5B, &A4
-1590 DATA &FE, &00, &ED, &4B, &A8, &FE, &00, &12
-1595 DATA &13, &0B, &C2, &EF, &FE, &00, &5B, &C9
-1600 FOR address%=&FEA0 TO &FEF7
+1520 DATA &52, &CD, &C6, &FE, &00, &C9, &2A, &B0
+1530 DATA &FE, &00, &ED, &5B, &B4, &FE, &00, &ED
+1540 DATA &4B, &B8, &FE, &00, &ED, &B0, &5B, &C9
+1550 DATA &AF, &18, &03, &3A, &BC, &FE, &52, &CD
+1560 DATA &E4, &FE, &00, &C9, &ED, &5B, &B4, &FE
+1570 DATA &00, &ED, &4B, &B8, &FE, &00, &12, &13
+1580 DATA &0B, &C2, &EE, &FE, &00, &5B, &C9
+1600 FOR address%=&FEB0 TO &FEF6
 1610   READ assembly%
+1615   PRINT ~" ",STR$~(assembly%),
 1620   ?address%=assembly%
 1630 NEXT address%
+1635 PRINT ""
 1640 REM
 1650 REM --- clear extended memory ---
-1660 REM "Clearing all of extended memory"
+1660 REM "Clearing extended memory"
 1670 !bufsize%=blocksize%
 1680 FOR address%=emloc% TO emloc%+emsize%-1 STEP bufsize%
-1690   PRINT " ";STR$~(address%);
+1690   PRINT " ",STR$~(address%),
 1700   !dstaddress%=address%
 1710   CALL clearram%
 1720 NEXT address%
@@ -83,14 +83,14 @@
 1810 REM
 1820 REM --- verify that buffer has all zeros ---
 1830 PRINT "Verifying that local buffer is all zeros"
-1840 FOR idx%=0 TO bufsize%
+1840 FOR idx%=0 TO bufsize%-1
 1850   address%=buffer%+idx%
 1860   IF ?address%<>0 THEN STOP
 1870 NEXT idx%
 1880 REM
 1890 REM --- change the buffer to something more interesting ---
 1900 PRINT "Filling local buffer contents"
-1910 FOR idx%=0 TO bufsize%
+1910 FOR idx%=0 TO bufsize%-1
 1920   POKE buffer%+idx%, idx% AND &FF
 1930 NEXT idx%
 1940 REM
@@ -103,7 +103,7 @@
 2010 REM
 2020 REM --- purposely erase local buffer ---
 2030 PRINT "Erasing local buffer"
-2040 FOR idx%=0 TO bufsize%
+2040 FOR idx%=0 TO bufsize%-1
 2050   address%=buffer%+idx%
 2060   ?address%=0
 2070 NEXT idx%
@@ -117,7 +117,7 @@
 2150 REM
 2160 REM --- verify that buffer looks interesting ---
 2170 PRINT "Verifying that local buffer has data"
-2180 FOR idx%=0 TO bufsize%
+2180 FOR idx%=0 TO bufsize%-1
 2190   address%=buffer%+idx%
 2200   IF ?address%<>(idx% AND &FF) THEN STOP
 2210 NEXT idx%
@@ -131,7 +131,7 @@
 2290 REM
 2300 REM --- purposely erase local buffer ---
 2310 PRINT "Erasing local buffer"
-2320 FOR idx%=0 TO bufsize%
+2320 FOR idx%=0 TO bufsize%-1
 2330   address%=buffer%+idx%
 2340   ?address%=0
 2350 NEXT idx%
@@ -145,7 +145,7 @@
 2430 REM
 2440 REM --- verify that buffer looks interesting ---
 2450 PRINT "Verifying that local buffer has data"
-2460 FOR idx%=0 TO bufsize%
+2460 FOR idx%=0 TO bufsize%-1
 2470   address%=buffer%+idx%
 2480   IF ?address%<>&CA THEN STOP
 2490 NEXT idx%

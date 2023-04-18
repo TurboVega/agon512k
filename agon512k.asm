@@ -29,9 +29,8 @@
 		XDEF	copy_ram
 		XDEF	clear_ram
 
-; BASIC uses HIMEM value of &FF00, so we choose enough room below that.
-		DEFINE	HIMEM_SEG, ORG=%FEA0
-		SEGMENT	HIMEM_SEG
+		DEFINE	MY_CODE_SEG, ORG=%FEB0
+		SEGMENT	MY_CODE_SEG
 		ALIGN	4
 
 		.ASSUME	ADL = 0
@@ -48,42 +47,10 @@ byte_value:		DB		0		; byte value used to fill memory
 
 ; Copy a block of RAM from the source address to the destination address.
 ;
-; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
-;
 copy_ram:
-		stmix					; enable mixed mode operation
-		call.sil	copy_adl	; perform the copy in ADL mode
-		rsmix					; disable mixed mode operation
+		call.sil copy_adl		; use ADL mode
 		ret
-
-; Clear a block of RAM at the destination address.
-;
-; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
-;
-clear_ram:
-		stmix					; enable mixed mode operation
-		ld			a, 0		; load zero for clearing
-		call.sil	fill_adl	; perform the fill in ADL mode
-		rsmix					; disable mixed mode operation
-		ret
-
-; Fill a block of RAM at the destination address with a given byte value.
-;
-; This routine is called in Z80 (non-ADL) mode. It changes to ADL mode to operate.
-;
-fill_ram:
-		stmix					; enable mixed mode operation
-		ld			a, (byte_value) ; load given value for filling memory
-		call.sil	fill_adl	; perform the clear in ADL mode
-		rsmix					; disable mixed mode operation
-		ret
-
 		.ASSUME ADL = 1
-
-; Copy a block of RAM from the source address to the destination address.
-;
-; This routine runs in ADL mode.
-;
 copy_adl:
 		ld		hl, (src_address) ; get the source address
 		ld		de, (dst_address) ; get the destination address
@@ -91,16 +58,28 @@ copy_adl:
 		ldir					; copy the entire block
 		ret.l
 
+		.ASSUME ADL = 0
+; Clear a block of RAM at the destination address.
+;
+clear_ram:
+		xor		a				; load zero for clearing
+		jr		fill			; perform the fill in ADL mode
+
 ; Fill a block of RAM at the destination address with a given byte value.
 ;
-; This routine runs in ADL mode. The byte value is in the A register.
-;
+fill_ram:
+		ld		a, (byte_value) ; load given value for filling memory
+fill:
+		call.sil fill_adl		; use ADL mode
+		ret
+
+		.ASSUME	ADL = 1
 fill_adl:
 		ld		de, (dst_address) ; get the destination address
 		ld		bc, (block_size) ; get the block size to fill
-loop:
+fill_loop:
 		ld		(de), a			; clear one byte
 		inc		de				; advance pointer
 		dec		bc				; decrease byte count
-		jp		nz,loop			; back if more to fill
+		jp		nz,fill_loop	; back if more to fill
 		ret.l

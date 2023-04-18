@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Mon Apr 17 05:27:44 2023
+DATE:      Tue Apr 18 00:58:28 2023
 PROCESSOR: assembler
 FILES:     .\agon512k.obj         
 
@@ -67,8 +67,8 @@ SPACE ALLOCATION:
 
 Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
-ROM                   C:00FEA0    C:00FEF7    20000H       58H    1FFA8H
-                                          (   131072        88    130984)
+ROM                   C:00FEB0    C:00FEF6    20000H       47H    1FFB9H
+                                          (   131072        71    131001)
 
 
 SEGMENTS WITHIN SPACE:
@@ -76,16 +76,16 @@ SEGMENTS WITHIN SPACE:
 
 ROM                               Type        Base         Top      Size
 ------------------ ------------------- ----------- ----------- ---------
-HIMEM_SEG          absolute data          C:00FEA0    C:00FEF7       58h
+MY_CODE_SEG        absolute data          C:00FEB0    C:00FEF6       47h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/17/2023 05:27:44
+Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/18/2023 00:58:28
 
     Name                                           Base         Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: HIMEM_SEG                         C:00FEA0    C:00FEF7       58h
+    Segment: MY_CODE_SEG                       C:00FEB0    C:00FEF6       47h
 
 EXTERNAL DEFINITIONS:
 =====================
@@ -118,11 +118,11 @@ _OSC_FREQ                           01312D00 (User Defined)
 _OSC_FREQ_MULT                      00000001 (User Defined)
 _SYS_CLK_FREQ                       01312D00 (User Defined)
 _SYS_CLK_SRC                        00000000 (User Defined)
-block_size                          C:00FEA8 agon512k        HIMEM_SEG                       
-clear_ram                           C:00FEBA agon512k        HIMEM_SEG                       
-copy_ram                            C:00FEB0 agon512k        HIMEM_SEG                       
-dst_address                         C:00FEA4 agon512k        HIMEM_SEG                       
-src_address                         C:00FEA0 agon512k        HIMEM_SEG                       
+block_size                          C:00FEB8 agon512k        MY_CODE_SEG                     
+clear_ram                           C:00FED8 agon512k        MY_CODE_SEG                     
+copy_ram                            C:00FEC0 agon512k        MY_CODE_SEG                     
+dst_address                         C:00FEB4 agon512k        MY_CODE_SEG                     
+src_address                         C:00FEB0 agon512k        MY_CODE_SEG                     
 
 31 external symbol(s).
 
@@ -164,8 +164,8 @@ src_address                       Defined     D:\AgonLight2\agon512k\agon512k.as
 
 OUTPUT CHECKSUM
 ===============
-agon512k.hex         002A0C
-agon512k.lod         002A0C
+agon512k.hex         001E9F
+agon512k.lod         001E9F
 
 
 
