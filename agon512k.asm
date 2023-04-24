@@ -60,15 +60,16 @@ emfG8AI: ; Get 8-bit item from array
 ; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG8AI%) 
 			call.lil	src_index8
 emfG8: ; Get 8-bit value
-; Usage: !emdSA% = sourceaddress: var%=USR(emfG8%) 
-			ld.lil	ix,emdSA
-			ld.lil	iy,emdV8
-			ld.l	a,(ix)
-			ld.lil	(iy),a
+; Usage: !emdSA% = sourceaddress: var%=USR(emfG8%)
+			ld.lil	ix,(emdSA)
+			ld.l	l,(ix)			; bits 7:0
+			xor		a				; clears A' & F' sign bits
+			ld		h,a				; bits 15:8
+			exx
 			xor		a
-			ld.l	(iy+1),a
-			ld.l	(iy+2),a
-			ld.l	(iy+3),a
+			ld		l,a				; bits 23:16
+			ld		h,a				; bits 31:24
+			ld		c,a				; indicate integer result
 			ret
 
 emfG16AI: ; Get 16-bit item from array
@@ -76,15 +77,15 @@ emfG16AI: ; Get 16-bit item from array
 			call.lil	src_index16
 emfG16: ; Get 16-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG16%)
-			ld.lil	ix,emdSA
-			ld.lil	iy,emdV16
-			ld.l	a,(ix)
-			ld.lil	(iy),a
-			ld.l	a,(ix+1)
-			ld.l	(iy+1),a
+			ld.lil	ix,(emdSA)
+			ld.l	l,(ix)			; bits 7:0
+			ld.l	h,(ix+1)		; bits 15:8
+			xor		a				; clears A' & F' sign bits
+			exx
 			xor		a
-			ld.l	(iy+2),a
-			ld.l	(iy+3),a
+			ld		l,a				; bits 23:16
+			ld		h,a				; bits 31:24
+			ld		c,a				; indicate integer result
 			ret
 
 emfG24AI: ; Get 24-bit item from array
@@ -92,12 +93,15 @@ emfG24AI: ; Get 24-bit item from array
 			call.lil	src_index24
 emfG24: ; Get 24-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG24%)
-			ld.lil	ix,emdSA
-			ld.lil	iy,emdV24
-			ld.lil	de,(ix)
-			ld.lil	(iy),de
+			ld.lil	ix,(emdSA)
+			ld.l	l,(ix)			; bits 7:0
+			ld.l	h,(ix+1)		; bits 15:8
+			xor		a				; clears A' & F' sign bits
+			exx
 			xor		a
-			ld.l	(iy+3),a
+			ld		l,(ix+2)		; bits 23:16
+			ld		h,a				; bits 31:24
+			ld		c,a				; indicate integer result
 			ret
 
 emfG32AI: ; Get 32-bit item from array
@@ -105,12 +109,15 @@ emfG32AI: ; Get 32-bit item from array
 			call.lil	src_index32
 emfG32: ; Get 32-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG32%)
-			ld.lil	ix,emdSA
-			ld.lil	iy,emdV32
-			ld.lil	de,(ix)
-			ld.lil	(iy),de
-			ld.l	a,(ix+3)
-			ld.l	(iy+3),a
+			ld.lil	ix,(emdSA)
+			ld.l	l,(ix)			; bits 7:0
+			ld.l	h,(ix+1)		; bits 15:8
+			xor		a				; clears A' & F' sign bits
+			exx
+			xor		a
+			ld		l,(ix+2)		; bits 23:16
+			ld		h,(ix+3)		; bits 31:24
+			ld		c,a				; indicate integer result
 			ret
 
 empGSAI: ; Get String (0..255 characters) item from array
@@ -118,7 +125,7 @@ empGSAI: ; Get String (0..255 characters) item from array
 			call.lil	src_index_s
 empGS: ; Get String (0..255 characters)
 ; Usage: !emdSA% = sourceaddress: CALL empGS%: var$=$emdVS%
-			ld.lil	ix,emdSA
+			ld.lil	ix,(emdSA)
 			ld.lil	iy,emdVS
 			ld		b,0
 loop2:
@@ -145,7 +152,7 @@ empP8: ; Put 8-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV8% = value: CALL empP8%
 ; Or:    !emdDA% = destinationaddress: ?emdV8% = value: CALL empP8%
 			ld.lil	ix,emdV8
-			ld.lil	iy,emdDA
+			ld.lil	iy,(emdDA)
 			ld.l	a,(ix)
 			ld.lil	(iy),a
 			ret
@@ -156,7 +163,7 @@ empP16AI: ; Put 16-bit item into array
 empP16: ; Put 16-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV16% = value: CALL empP16%
 			ld.lil	ix,emdV16
-			ld.lil	iy,emdDA
+			ld.lil	iy,(emdDA)
 			ld.l	a,(ix)
 			ld.lil	(iy),a
 			ld.l	a,(ix+1)
@@ -169,7 +176,7 @@ empP24AI: ; Put 24-bit item into array
 empP24: ; Put 24-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV24% = value: CALL empP24%
 			ld.lil	ix,emdV24
-			ld.lil	iy,emdDA
+			ld.lil	iy,(emdDA)
 			ld.lil	de,(ix)
 			ld.lil	(iy),de
 			ret
@@ -180,7 +187,7 @@ empP32AI: ; Put 32-bit item into array
 empP32: ; Pet 32-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV32% = value: CALL empP32%
 			ld.lil	ix,emdV32
-			ld.lil	iy,emdDA
+			ld.lil	iy,(emdDA)
 			ld.lil	de,(ix)
 			ld.lil	(iy),de
 			ld.l	a,(ix+3)
@@ -193,7 +200,7 @@ empPSAI: ; Put String (0..255 characters) item into array
 empPS: ; Put String (0..255 characters)
 ; Usage: !emdDA% = destinationaddress: !emdVS% = stringvalue: CALL empPS%
 			ld.lil	ix,emdVS
-			ld.lil	iy,emdDA
+			ld.lil	iy,(emdDA)
 			ld		b,0
 loop3:
 			ld.l	a,(ix)
