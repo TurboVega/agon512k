@@ -38,6 +38,19 @@ The maximum array index size for any array is 65535 (&FFFF). This does not preve
 or more arrays in memory such that they are physically together. It only means that you may need to reference the second (or third)
 array separately from the first array, and be sure to use base zero
 indexes in each array (i.e., range 0 to 65535).
+
+The code does not presently support storing <i>record-oriented</i> data
+fields in an obvious manner; however, you can mimic that behavior
+in a couple of ways: (1) store data fields in subsequent memory
+locations such that they form a "record" (a set of consecutive
+data values of various types), and store a series of records in
+consecutive memory locations, or (2) use multiple arrays, with
+one array per data field, where each array holds only items of a
+particular data type. Typically, such arrays would have equal
+lengths (the same number of array items).
+Method (1) requires you to manage the
+memory yourself, but method (2) helps with array indexing, and
+only requires that the arrays do not overlap in memory.
 <br>
 <br>
 ## PROC_empInit - Initialize routine addresses
@@ -69,13 +82,15 @@ Usage: !emdDA% = <i>destinationaddress</i>
 <br>
 <br>
 ## emdAI% - Array index parameter
-This parameter is a 24-bit array index that is required by some routines, as specified below.
+This parameter is a 16-bit array index that is required by some routines, as specified below. The array index ranges from 0
+to 65535 (&FFFF). See comments above about splitting large arrays.
 
 Usage: !emdAI% = <i>arrayindex</i>
 <br>
 <br>
 ## emdIS% - Array item size parameter
-This parameter is a 16-bit array item size that is required by some routines, as specified below.
+This parameter is a 16-bit array item size that is required by some routines, as specified below. The item size ranges from 1 to 256
+(&100). See comments above about splitting large arrays.
 
 Usage: !emdIS% = <i>itemsize</i>
 <br>
