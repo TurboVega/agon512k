@@ -241,6 +241,19 @@ empZMB: ; Zero memory block
 ; Usage: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empZMB%
 			ret
 
+dst_index_f: ; Add 5x array index to the destination address
+			call.lil	dst_index8
+dst_index32: ; Add 4x array index to the destination address
+			call.lil	dst_index8
+dst_index24: ; Add 3x array index to the destination address
+			call.lil	dst_index8
+dst_index16: ; Add 2x array index to the destination address
+			call.lil	dst_index8
+dst_index8: ; Add 1x array index to the destination address
+			ld.lil	ix,emdDA
+			jr		add_to_addr
+src_index_f: ; Add 5x array index to the source address
+			call.lil	src_index8
 src_index32: ; Add 4x array index to the source address
 			call.lil	src_index8
 src_index24: ; Add 3x array index to the source address
@@ -261,6 +274,9 @@ add_to_addr:
 			ld.lil	(ix+2),a
 			ret.l
 
+dst_index_s: ; Add (item size)*(array index) to the destination address
+			ld.lil	ix,emdDA
+			jr		add_to_addr2
 src_index_s: ; Add (item size)*(array index) to the source address
 			ld.lil	ix,emdSA
 ; The array index is limited to the range 0 to 65535 (&FFFF). The array item size
@@ -313,24 +329,4 @@ add_to_addr2:
 			adc		a,c				; AIH*ISH (L)
 			adc		a,(ix+2)		; add address (bits 23:16)
 			ld		(ix+2),a		; save new address (bits 23:16)
-			ret.l
-
-src_index_f:
-			ret.l
-
-dst_index32: ; Add 4x array index to the destination address
-			call.lil	dst_index8
-dst_index24: ; Add 3x array index to the destination address
-			call.lil	dst_index8
-dst_index16: ; Add 2x array index to the destination address
-			call.lil	dst_index8
-dst_index8: ; Add 1x array index to the destination address
-			ld.lil	ix,emdDA
-			jr		add_to_addr
-
-dst_index_s: ; Add (item size)*(array index) to the destination address
-			ld.lil	ix,emdDA
-			jr		add_to_addr2
-
-dst_index_f:
 			ret.l
