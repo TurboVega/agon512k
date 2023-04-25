@@ -23,6 +23,22 @@ The name "var" is a placeholder for a variable name of your choosing.
 
 Regarding parameters, with the exception of string values,
 numeric expressions are typically expected, and may be constants, variables, computation results, function results, etc.
+
+Many of the routines work with arrays. When working with 8-, 16-,
+24-, or 32-bit array item values, the code automatically assumes
+the size of an array item to be 1, 2, 3, or 4 bytes, respectively.
+When working with float values, each item is 5 bytes in size.
+When working with an array of string values, the maximum item size
+must be specified manually, because strings have various lengths.
+The maximum item size in a string array is 256 bytes, meaning that
+the maximum string length inside an item is 255 bytes, because of
+the trailing CR character stored with the string.
+
+The maximum array index size for any array is 65535 (&FFFF). This does not prevent you from having larger arrays, because you can arrange two
+or more arrays in memory such that they are physically together. It only means that you may need to reference the second (or third)
+array separately from the first array, and be sure to use base zero
+indexes in each array (i.e., range 0 to 65535).
+<br>
 <br>
 ## PROC_empInit - Initialize routine addresses
 This BASIC procedure will initialize the variables
@@ -56,6 +72,12 @@ Usage: !emdDA% = <i>destinationaddress</i>
 This parameter is a 24-bit array index that is required by some routines, as specified below.
 
 Usage: !emdAI% = <i>arrayindex</i>
+<br>
+<br>
+## emdIS% - Array item size parameter
+This parameter is a 16-bit array item size that is required by some routines, as specified below.
+
+Usage: !emdIS% = <i>itemsize</i>
 <br>
 <br>
 ## emdRC% - Repeat count parameter
@@ -166,9 +188,13 @@ Usage: !emdSA% = <i>sourceaddress</i>: !emdAI% = <i>array index</i>: var%=USR(em
 <br>
 <br>
 ## empGSAI% - Get String (0..255 characters) item from array
-This function reads a string array item from memory.
+This function reads a string array item from memory. The given start address
+points to the start of the array (at item #0). The item size tells how big each
+array item is, which determines the maximum size of the string that can be stored
+there. For example, using an item size of 21, the maximum string length is 20,
+because of the trailing CR at the end of the string, while stored.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdAI% = <i>array index</i>: CALL empGSAI%: var$ = $emdVS%
+Usage: !emdSA% = <i>sourceaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: CALL empGSAI%: var$ = $emdVS%
 <br>
 <br>
 ## emfGFAI% - Get Float (40 bits) item from array
@@ -236,9 +262,13 @@ Usage: !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: !emdV3
 <br>
 <br>
 ## empPSAI% - Put String (0..255 characters) item into array
-This procedure writes a string array item to memory.
+This procedure writes a string array item to memory. The given start address
+points to the start of the array (at item #0). The item size tells how big each
+array item is, which determines the maximum size of the string that can be stored
+there. For example, using an item size of 21, the maximum string length is 20,
+because of the trailing CR at the end of the string, while stored.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: $emdVS% = <i>stringvalue</i>: CALL empPSAI%
+Usage: !emdDA% = <i>destinationaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: $emdVS% = <i>stringvalue</i>: CALL empPSAI%
 <br>
 <br>
 ## empPFAI% - Put Float (40 bits) item into array

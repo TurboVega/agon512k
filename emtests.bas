@@ -1,12 +1,31 @@
 10 REM emtests.bas
 20 HIMEM=&F000
 30 PROC_empI
-40 !emdSA%=emBase%+emdV8%: ?emdV8%=&5A: PRINT "01: ";~USR(emfG8%)
-50 !emdSA%=emBase%+emdV8%: ?emdV8%=&A5: PRINT "02: ";~USR(emfG8%)
-60 !emdSA%=emBase%+emdV16%: !emdV16%=&6789: PRINT "03: ";~USR(emfG16%)
-70 !emdSA%=emBase%+emdV16%: !emdV16%=&B3C2: PRINT "04: ";~USR(emfG16%)
-80 !emdSA%=emBase%+emdV32%: !emdV32%=&16273849: PRINT "05: ";~USR(emfG32%)
-90 !emdSA%=emBase%+emdV32%: !emdV32%=&A6B7D3C5: PRINT "06: ";~USR(emfG32%)
+35 REM Using addresses in range &4F000 to &4F0FF, just so we can use
+36 REM indirection to write/read test data in memory. Note indirection
+37 REM must use addresses in range &0F000 to &0F0FF, to correspond.
+
+40 !emdSA%=&4F000: ?&F000=&5A: PRINT "01a: ";~USR(emfG8%)
+45 !emdDA%=&4F000: ?emdV8%=&11: CALL empP8%: PRINT "01b: ";~USR(emfG8%)
+
+50 !emdSA%=&4F001: ?&F001=&A5: PRINT "02a: ";~USR(emfG8%)
+55 !emdDA%=&4F001: ?emdV8%=&22: CALL empP8%: PRINT "02b: ";~USR(emfG8%)
+
+60 !emdSA%=&4F002: !&F002=&6789: PRINT "03a: ";~USR(emfG16%)
+65 !emdDA%=&4F002: !emdV16%=&3344: CALL empP16%: PRINT "03b: ";~USR(emfG16%)
+
+70 !emdSA%=&4F003: !&F003=&B3C2: PRINT "04a: ";~USR(emfG16%)
+75 !emdDA%=&4F003: !emdV16%=5566: CALL empP16%: PRINT "04b: ";~USR(emfG16%)
+
+80 !emdSA%=&4F004: !&F004=&162738: PRINT "05a: ";~USR(emfG24%)
+85 !emdDA%=&4F004: !emdV24%=&8899AA: CALL empP24%: PRINT "05b: ";~USR(emfG24%)
+
+90 !emdSA%=&4F005: !&F005=&A6B7D3C5: PRINT "06a: ";~USR(emfG32%)
+95 !emdDA%=&4F005: !emdV32%=&BBCCDDEE: CALL empP32%: PRINT "06b: ";~USR(emfG32%)
+
+100 !emdSA%=&4F006: $&F006="Test string!": CALL empGS%: PRINT "07a: ";$emdVS%
+105 !emdDA%=&4F006: $emdVS%="[Cool-text]": CALL empPS%: PRINT "07b: ";$&F006
+
 64999 END
 65000 DEF PROC_empI
 65001 emdV8%=&F000
@@ -32,11 +51,11 @@
 65110 emfG32AI%=&F
 65120 empGSAI%=&F
 65130 emfGFAI%=&F
-65140 empP8%=&F
-65150 empP16%=&F
-65160 empP24%=&F
-65170 empP32%=&F
-65180 empPS%=&F
+65140 empP8%=&F1C6
+65150 empP16%=&FE0
+65160 empP24%=&F202
+65170 empP32%=&F21C
+65180 empPS%=&F23E
 65190 empPF%=&F
 65200 empP8AI%=&F
 65210 empP16AI%=&F

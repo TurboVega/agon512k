@@ -29,22 +29,31 @@
 		XDEF	empP8AI, empP16AI, empP24AI, empP32AI, empPSAI, empPFAI
 		XDEF	empCMB, empXMB, empZMB
 
-		DEFINE	MY_CODE_SEG, SPACE=RAM, ORG=%4F000
-		SEGMENT	MY_CODE_SEG
+		DEFINE	MY_DATA_SEG, SPACE=RAM, ORG=%0F000
+		SEGMENT	MY_DATA_SEG
 		ALIGN	4
 
 		.ASSUME	ADL = 0
 
+; These data values of various types are overlayed with each other.
 emdV8:					; Value parameter as 8 bits
 emdV16:					; Value parameter as 16 bits
 emdV24:					; Value parameter as 24 bits
 emdV32:					; Value parameter as 32 bits
 empVF:					; Value parameter as float
 emdVS:		ds		256	; Value parameter as string
+
+; These parameters are all separate from each other.
 emdSA:		ds		4	; Source address parameter
 emdDA:		ds		4	; Destination address parameter
-emdAI:		ds		4	; Array index parameter
+emdAI:		ds		4	; Array index parameter (range 0..65535)
+emdIS:		ds		4	; Array item size parameter (range 1..256)
 emdRC:		ds		4	; Repeat count parameter
+
+
+		DEFINE	MY_CODE_SEG, SPACE=ROM, ORG=%0F114
+		SEGMENT	MY_CODE_SEG
+		ALIGN	4
 
 empI: ; Initialize upper RAM
 ; Usage: CALL empI%
@@ -121,7 +130,8 @@ emfG32: ; Get 32-bit value
 			ret
 
 empGSAI: ; Get String (0..255 characters) item from array
-; Usage: !emdSA% = sourceaddress: !emdAI% = array index: CALL empGSAI%: var$ = $emdVS%
+; Usage: !emdSA% = sourceaddress: !emdIS% = itemsize:
+;        !emdAI% = array index: CALL empGSAI%: var$ = $emdVS%
 			call.lil	src_index_s
 empGS: ; Get String (0..255 characters)
 ; Usage: !emdSA% = sourceaddress: CALL empGS%: var$=$emdVS%
@@ -195,7 +205,8 @@ empP32: ; Pet 32-bit value
 			ret
 
 empPSAI: ; Put String (0..255 characters) item into array
-; Usage: !emdDA% = destinationaddress: !emdAI% = array index: $emdVS% = stringvalue: CALL empPSAI%
+; Usage: !emdDA% = destinationaddress: !emdIS% = itemsize:
+;        !emdAI% = array index: $emdVS% = stringvalue: CALL empPSAI%
 			call.lil	dst_index_s
 empPS: ; Put String (0..255 characters)
 ; Usage: !emdDA% = destinationaddress: !emdVS% = stringvalue: CALL empPS%
@@ -239,18 +250,69 @@ src_index16: ; Add 2x array index to the source address
 src_index8: ; Add 1x array index to the source address
 			ld.lil	ix,emdSA
 add_to_addr:
-			ld.lil	a,(emdAI)
+			ld		a,(emdAI)
 			add		a,(ix)
 			ld.lil	(ix),a
-			ld.lil	a,(emdAI+1)
+			ld		a,(emdAI+1)
 			adc		a,(ix+1)
 			ld.lil	(ix+1),a
-			ld.lil	a,(emdAI+2)
+			ld		a,(emdAI+2)
 			adc		a,(ix+2)
 			ld.lil	(ix+2),a
 			ret.l
 
-src_index_s:
+src_index_s: ; Add (item size)*(array index) to the source address
+			ld.lil	ix,emdSA
+; The array index is limited to the range 0 to 65535 (&FFFF). The array item size
+; is limited to the range 1 to 256. In order to compute the byte offset from the
+; start of the array to a particular array item, we do a 16-bit by 16-bit multiplication,
+; and use the lower 24-bits of the resulting product. The MLT instruction can only
+; multiply 8 bits by 8 bits, so we must use it several times.
+;
+; array index: [AIH][AIL]
+; item size:   [ISH][ISL]
+; item offset: AIL*ISL + AIH*ISL*100H + ISH*AIL*100H + AIH*ISH*10000H
+;
+add_to_addr2:
+			push	ix				; save location of address parameter
+			ld		ix,emdAI
+			ld		iy,emdIS
+
+			ld		b,(ix+1)		; AIH
+			ld		c,(iy+1)		; ISH
+			mlt		bc				; AIH*ISH (*10000H)
+			exx
+
+			ld		b,(ix)			; AIL
+			ld		c,(iy)			; ISL
+			mlt		bc				; AIL*ISL (*1H)
+
+			ld		d,(ix+1)		; AIH
+			ld		e,(iy)			; ISL
+			mlt		de				; AIH*ISL (*100H)
+
+			ld		h,(ix)			; AIL
+			ld		l,(iy+1)		; ISH
+			mlt		hl				; AIL*ISH (*100H)
+			
+			pop		ix				; restore location of address parameter
+
+			ld		a,c				; AIL*ISL (L)
+			add		a,(ix)			; add address (bits 7:0)
+			ld		(ix),a			; save new address (bits 7:0)
+			
+			ld		a,b				; AIL*ISL (H)
+			adc		a,e				; AIH*ISL (L)
+			adc		a,l				; AIL*ISH (L)
+			adc		a,(ix+1)		; add address (bits 15:8)
+			ld		(ix+1),a		; save new address (bits 15:8)
+
+			ld		a,d				; AIH*ISL (H)
+			adc		a,h				; AIL*ISH (H)
+			exx
+			adc		a,c				; AIH*ISH (L)
+			adc		a,(ix+2)		; add address (bits 23:16)
+			ld		(ix+2),a		; save new address (bits 23:16)
 			ret.l
 
 src_index_f:
@@ -266,8 +328,9 @@ dst_index8: ; Add 1x array index to the destination address
 			ld.lil	ix,emdDA
 			jr		add_to_addr
 
-dst_index_s:
-			ret.l
+dst_index_s: ; Add (item size)*(array index) to the destination address
+			ld.lil	ix,emdDA
+			jr		add_to_addr2
 
 dst_index_f:
 			ret.l
