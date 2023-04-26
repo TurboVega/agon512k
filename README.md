@@ -1,6 +1,9 @@
 # agon512k
 <b>Access 512KB RAM from within BASIC on AgonLight (TM)</b>
 
+Versions:<br>
+V0.1 - Initial release of code for beta testing.
+
 This collection of assembler functions provide access to the extended memory (including and beyond the first 64KB) attached to the EZ80 CPU.
 The RAM resides at addresses &40000 to &BFFFF, with BASIC normally using the lower 64KB (&40000 to &4FFFF). Now, you have another 448KB of RAM accessible from BASIC, ranging from
 &50000 to &BFFFF.
@@ -170,7 +173,7 @@ This procedure reads a string value from memory.
 Usage: !emdSA% = <i>sourceaddress</i>: CALL empGS%: var$=$emdVS%
 <br>
 <br>
-## emfGF% - Get Float (40 bits)
+## empGF% - Get Float (40 bits)
 This procedure reads a float value from memory, and copies the value into the specified variable.
 
 Usage: !emdSA% = <i>sourceaddress</i>: CALL empGF%,<i>floatvariable</i>
@@ -210,7 +213,7 @@ because of the trailing CR at the end of the string, while stored.
 Usage: !emdSA% = <i>arrayaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: CALL empGSAI%: var$ = $emdVS%
 <br>
 <br>
-## emfGFAI% - Get Float (40 bits) item from array
+## empGFAI% - Get Float (40 bits) item from array
 This procedure reads a float array item from memory, and copies the value into the specified variable.
 
 Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: CALL empGFAI%,<i>floatvariable</i>

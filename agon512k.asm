@@ -26,13 +26,13 @@
 		XREF	emdV8, emdV16, emdV24, emdV32, emdVS
 		XREF	emdSA, emdDA, emdAI, emdIS, emdRC
 
-		XDEF	empI, emfG8, emfG16, emfG24, emfG32, empGS, emfGF
-		XDEF	emfG8AI, emfG16AI, emfG24AI, emfG32AI, empGSAI, emfGFAI
+		XDEF	empI, emfG8, emfG16, emfG24, emfG32, empGS, empGF
+		XDEF	emfG8AI, emfG16AI, emfG24AI, emfG32AI, empGSAI, empGFAI
 		XDEF	empP8, empP16, empP24, empP32, empPS, empPF
 		XDEF	empP8AI, empP16AI, empP24AI, empP32AI, empPSAI, empPFAI
 		XDEF	empCMBI, empCMBD, empXMB, empZMB
 
-		DEFINE	MY_DATA_SEG, SPACE=RAM, ORG=%4FC00
+		DEFINE	MY_DATA_SEG, SPACE=RAM, ORG=%4FB00
 		SEGMENT	MY_DATA_SEG
 		ALIGN	4
 
@@ -53,7 +53,7 @@ emdIS:		ds		4	; Array item size parameter (range 1..256)
 emdRC:		ds		4	; Repeat count parameter
 
 
-		DEFINE	MY_CODE_SEG, SPACE=ROM, ORG=%4FD14
+		DEFINE	MY_CODE_SEG, SPACE=ROM, ORG=%4FC14
 		SEGMENT	MY_CODE_SEG
 		ALIGN	4
 
@@ -151,11 +151,30 @@ loop2:
 			jr		nz,loop2
 done2:		ret
 
-emfGFAI: ; Get Float (40 bits) item from array
+empGFAI: ; Get Float (40 bits) item from array
 ; Usage: !emdSA% = arrayaddress: !emdAI% = array index: CALL empGFAI%,floatvariable
+			push	ix
 			call.lil	src_index_f
-emfGF: ; Get Float (40 bits)
+			pop		ix
+empGF: ; Get Float (40 bits)
 ; Usage: !emdSA% = sourceaddress: CALL empGF%,floatvariable
+			ld		a,(ix)		; get # of parameters
+			cp		a,1			; is there exactly 1 parameter?
+			jr		nz,skip		; go if no
+			ld		a,(ix+1)	; get parameter type code
+			cp		a,5			; is it a "real" (float)?
+			jr		nz,skip		; go if no
+			ld		iy,(ix+2)	; get address of the parameter variable
+			ld.lil	ix,(emdSA)	; get stored float source address
+			ld		b,5			; # of bytes to copy
+loop6:
+			ld.lil	a,(ix)		; get src byte
+			ld		(iy),a		; store dst byte
+			inc.l	ix			; inc src ptr
+			inc		iy			; inc dst ptr
+			dec		b			; dec count
+			jr		nz,loop6	; back if more to copy
+skip:
 			ret
 
 empP8AI: ; Put 8-bit item into array
@@ -230,9 +249,28 @@ done3:		ret
 
 empPFAI: ; Put Float (40 bits) item into array
 ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: CALL empPFAI%,floatvariable
+			push	ix
 			call.lil	dst_index_f
+			pop		ix
 empPF: ; Put Float (40 bits)
 ; Usage: !emdDA% = destinationaddress: CALL empPF%,floatvariable
+			ld		a,(ix)		; get # of parameters
+			cp		a,1			; is there exactly 1 parameter?
+			jr		nz,skip2	; go if no
+			ld		a,(ix+1)	; get parameter type code
+			cp		a,5			; is it a "real" (float)?
+			jr		nz,skip2	; go if no
+			ld		ix,(ix+2)	; get address of the parameter variable
+			ld.lil	iy,(emdDA)	; get stored float destination address
+			ld		b,5			; # of bytes to copy
+loop7:
+			ld		a,(ix)		; get src byte
+			ld.lil	(iy),a		; store dst byte
+			inc		ix			; inc src ptr
+			inc.l	iy			; inc dst ptr
+			dec		b			; dec count
+			jr		nz,loop7	; back if more to copy
+skip2:
 			ret
 
 empCMBI:; Copy memory block by incrementing
