@@ -69,7 +69,7 @@ loop1:		ld.lil	(hl),de
 			ret
 
 emfG8AI: ; Get 8-bit item from array
-; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG8AI%) 
+; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG8AI%) 
 			call.lil	src_index8
 emfG8: ; Get 8-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG8%)
@@ -85,7 +85,7 @@ emfG8: ; Get 8-bit value
 			ret
 
 emfG16AI: ; Get 16-bit item from array
-; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG16IA%) 
+; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG16IA%) 
 			call.lil	src_index16
 emfG16: ; Get 16-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG16%)
@@ -101,7 +101,7 @@ emfG16: ; Get 16-bit value
 			ret
 
 emfG24AI: ; Get 24-bit item from array
-; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG24AI%) 
+; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG24AI%) 
 			call.lil	src_index24
 emfG24: ; Get 24-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG24%)
@@ -117,7 +117,7 @@ emfG24: ; Get 24-bit value
 			ret
 
 emfG32AI: ; Get 32-bit item from array
-; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG32AI%) 
+; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG32AI%) 
 			call.lil	src_index32
 emfG32: ; Get 32-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG32%)
@@ -133,7 +133,7 @@ emfG32: ; Get 32-bit value
 			ret
 
 empGSAI: ; Get String (0..255 characters) item from array
-; Usage: !emdSA% = sourceaddress: !emdIS% = itemsize:
+; Usage: !emdSA% = arrayaddress: !emdIS% = itemsize:
 ;        !emdAI% = array index: CALL empGSAI%: var$ = $emdVS%
 			call.lil	src_index_s
 empGS: ; Get String (0..255 characters)
@@ -158,8 +158,8 @@ emfGF: ; Get Float (40 bits)
 			ret
 
 empP8AI: ; Put 8-bit item into array
-; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV8% = value: CALL empP8AI%
-; Or:    !emdDA% = destinationaddress: !emdAI% = array index: ?emdV8% = value: CALL empP8AI%
+; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV8% = value: CALL empP8AI%
+; Or:    !emdDA% = arrayaddress: !emdAI% = array index: ?emdV8% = value: CALL empP8AI%
 			call.lil	dst_index8
 empP8: ; Put 8-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV8% = value: CALL empP8%
@@ -171,7 +171,7 @@ empP8: ; Put 8-bit value
 			ret
 
 empP16AI: ; Put 16-bit item into array
-; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV16% = value: CALL empP16AI%
+; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV16% = value: CALL empP16AI%
 			call.lil	dst_index16
 empP16: ; Put 16-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV16% = value: CALL empP16%
@@ -184,7 +184,7 @@ empP16: ; Put 16-bit value
 			ret
 
 empP24AI: ; Put 24-bit item into array
-; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV24% = value: CALL empP24AI%
+; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV24% = value: CALL empP24AI%
 			call.lil	dst_index24
 empP24: ; Put 24-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV24% = value: CALL empP24%
@@ -195,7 +195,7 @@ empP24: ; Put 24-bit value
 			ret
 
 empP32AI: ; Put 32-bit item into array
-; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV32% = value: CALL empP32AI%
+; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV32% = value: CALL empP32AI%
 			call.lil	dst_index32
 empP32: ; Pet 32-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV32% = value: CALL empP32%
@@ -208,7 +208,7 @@ empP32: ; Pet 32-bit value
 			ret
 
 empPSAI: ; Put String (0..255 characters) item into array
-; Usage: !emdDA% = destinationaddress: !emdIS% = itemsize:
+; Usage: !emdDA% = arrayaddress: !emdIS% = itemsize:
 ;        !emdAI% = array index: $emdVS% = stringvalue: CALL empPSAI%
 			call.lil	dst_index_s
 empPS: ; Put String (0..255 characters)

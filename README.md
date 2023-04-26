@@ -104,8 +104,8 @@ Usage: !emdRC% = <i>repeatcount</i>
 ## emdV8% - Value parameter as 8 bits
 This parameter is an 8-bit value that is required by some routines, as specified below.
 
-Usage: ?emdV8% = <i>value</i>
-Or:    !emdV8% = <i>value</i>
+Usage: ?emdV8% = <i>value</i><br>
+Or: !emdV8% = <i>value</i>
 <br>
 <br>
 ## emdV16% - Value parameter as 16 bits
@@ -134,10 +134,10 @@ the original string should not contain a carriage-return.
 Usage: $emdVS% = <i>stringvalue</i>
 <br>
 <br>
-## empVF% - Set value parameter as float
+## empVF% - Value parameter as float
 The procedure sets a float value that is required by some routines, as specified below.
 
-Usage: CALL empVF%, <i>value</i>
+Usage: CALL empVF%, <i>floatvalue</i>
 <br>
 <br>
 ## empI% - Initialize upper RAM
@@ -177,31 +177,33 @@ Usage: !emdSA% = <i>sourceaddress</i>: CALL empGS%: var$=$emdVS%
 <br>
 <br>
 ## emfGF% - Get Float (40 bits)
-TBD
+This procedure reads a float value from memory, and copies the value into the specified variable.
+
+Usage: !emdSA% = <i>sourceaddress</i>: CALL empGF%,<i>floatvariable</i>
 <br>
 <br>
 ## emfG8AI% - Get 8-bit item from array
 This function reads an 8-bit array item from memory.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG8AI%) 
+Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG8AI%) 
 <br>
 <br>
 ## emfG16AI% - Get 16-bit item from array
 This function reads a 16-bit array item from memory.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG16IA%) 
+Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG16IA%) 
 <br>
 <br>
 ## emfG24AI% - Get 24-bit item from array
 This function reads a 24-bit array item from memory.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG24AI%) 
+Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG24AI%) 
 <br>
 <br>
 ## emfG32AI% - Get 32-bit item from array
 This function reads a 32-bit array item from memory.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG32AI%) 
+Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG32AI%) 
 <br>
 <br>
 ## empGSAI% - Get String (0..255 characters) item from array
@@ -211,18 +213,20 @@ array item is, which determines the maximum size of the string that can be store
 there. For example, using an item size of 21, the maximum string length is 20,
 because of the trailing CR at the end of the string, while stored.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: CALL empGSAI%: var$ = $emdVS%
+Usage: !emdSA% = <i>arrayaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: CALL empGSAI%: var$ = $emdVS%
 <br>
 <br>
 ## emfGFAI% - Get Float (40 bits) item from array
-TBD
+This procedure reads a float array item from memory, and copies the value into the specified variable.
+
+Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: CALL empGFAI%,<i>floatvariable</i>
 <br>
 <br>
 ## empP8% - Put 8-bit value
 This procedure writes an 8-bit value to memory.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdV8% = <i>value</i>: CALL empP8%
-Or:    !emdDA% = <i>destinationaddress</i>: ?emdV8% = <i>value</i>: CALL empP8%
+Usage: !emdDA% = <i>destinationaddress</i>: !emdV8% = <i>value</i>: CALL empP8%<br>
+Or: !emdDA% = <i>destinationaddress</i>: ?emdV8% = <i>value</i>: CALL empP8%
 <br>
 <br>
 ## empP16% - Put 16-bit value
@@ -253,32 +257,34 @@ Usage: !emdDA% = <i>destinationaddress</i>: $emdVS% = <i>stringvalue</i>: CALL e
 <br>
 <br>
 ## empPF% - Put Float (40 bits)
-TBD
+This procedure copies the value from the specified float variable into memory.
+
+Usage: !emdDA% = <i>destinationaddress</i>: CALL empPF%,<i>floatvariable</i>
 <br>
 <br>
 ## empP8AI% - Put 8-bit item into array
 This procedure writes an 8-bit array item to memory.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: !emdV8% = <i>value</i>: CALL empP8AI%
-Or:    !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: ?emdV8% = <i>value</i>: CALL empP8AI%
+Usage: !emdDA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: !emdV8% = <i>value</i>: CALL empP8AI%<br>
+Or: !emdDA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: ?emdV8% = <i>value</i>: CALL empP8AI%
 <br>
 <br>
 ## empP16AI% - Put 16-bit item into array
 This procedure writes a 16-bit array item to memory.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: !emdV16% = <i>value</i>: CALL empP16AI%
+Usage: !emdDA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: !emdV16% = <i>value</i>: CALL empP16AI%
 <br>
 <br>
 ## empP24AI% - Put 24-bit item into array
 This procedure writes a 24-bit array item to memory.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: !emdV24% = <i>value</i>: CALL empP24AI%
+Usage: !emdDA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: !emdV24% = <i>value</i>: CALL empP24AI%
 <br>
 <br>
 ## empP32AI% - Put 32-bit item into array
 This procedure writes a 32-bit array item to memory.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdAI% = <i>array index</i>: !emdV32% = <i>value</i>: CALL empP32AI%
+Usage: !emdDA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: !emdV32% = <i>value</i>: CALL empP32AI%
 <br>
 <br>
 ## empPSAI% - Put String (0..255 characters) item into array
@@ -288,11 +294,13 @@ array item is, which determines the maximum size of the string that can be store
 there. For example, using an item size of 21, the maximum string length is 20,
 because of the trailing CR at the end of the string, while stored.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: $emdVS% = <i>stringvalue</i>: CALL empPSAI%
+Usage: !emdDA% = <i>arrayaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% = <i>array index</i>: $emdVS% = <i>stringvalue</i>: CALL empPSAI%
 <br>
 <br>
 ## empPFAI% - Put Float (40 bits) item into array
-TBD
+This procedure copies the value from the specified float variable into a float array item in memory.
+
+Usage: !emdDA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: CALL empPFAI%,<i>floatvariable</i>
 <br>
 <br>
 ## empCMBI% - Copy memory block by incrementing addresses

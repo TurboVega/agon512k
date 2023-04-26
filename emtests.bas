@@ -1,6 +1,6 @@
 10 REM emtests.bas
 20 HIMEM=&F000
-30 PROC_empI
+30 PROC_empInit
 35 REM Using addresses in range &4F000 to &4F0FF, just so we can use
 36 REM indirection to write/read test data in memory. Note indirection
 37 REM must use addresses in range &0F000 to &0F0FF, to correspond.
@@ -33,7 +33,7 @@
 1000 DEF PROC_wait
 1010 FOR I=0 TO 10000:NEXT I
 1020 ENDPROC
-65000 DEF PROC_empI
+65000 DEF PROC_empInit
 
 65010 emdAI%=&0F108
 65011 emdDA%=&0F104
@@ -77,10 +77,8 @@
 65290 emBase%=&40000
 65300 FOR address%=&F114 TO &F339
 65310   READ assembly%
-65315   REM PRINT " ";~assembly%;
 65320   ?address%=assembly%
 65330 NEXT address%
-65340 REM PRINT: PRINT
 
 65400 DATA &5B, &11, &00, &00, &00, &5B, &21, &00, &00, &05, &5B, &01, &00, &00, &07, &5B
 65401 DATA &ED, &1F, &5B, &0B, &20, &F9, &C9, &5B, &CD, &A2, &F2, &04, &5B, &DD, &2A, &00
