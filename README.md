@@ -1,12 +1,17 @@
 # agon512k
 <b>Access 512KB RAM from within BASIC on AgonLight (TM)</b>
 
-Versions:<br>
-V0.1 - Initial release of code for beta testing.
-
 This collection of assembler functions provide access to the extended memory (including and beyond the first 64KB) attached to the EZ80 CPU.
 The RAM resides at addresses &40000 to &BFFFF, with BASIC normally using the lower 64KB (&40000 to &4FFFF). Now, you have another 448KB of RAM accessible from BASIC, ranging from
 &50000 to &BFFFF.
+<br>
+<br>
+Versions:<br>
+V0.1 - Initial release of code for beta testing of a number of routines.
+<br>
+<br>
+<b>NOTE: Only those routines that are specifically called (via CALL or USR) in "emtests.bas" have been tested some. Other routines have not yet been tested,
+but I'm working on that.</b>
 <br>
 <br>
 NOTE: The provided routines do not modify or enhance the BASIC language, nor provide an easy way to allow you to write BASIC
