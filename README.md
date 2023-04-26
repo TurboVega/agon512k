@@ -127,7 +127,9 @@ Usage: !emdV32% = <i>value</i>
 <br>
 <br>
 ## emdVS% - Value parameter as string
-This parameter is a string value that is required by some routines, as specified below.
+This parameter is a string value that is required by some routines, as specified below. When stored in memory, the string will be
+terminated by a carriage-return (CR, 0DH) character; therefore,
+the original string should not contain a carriage-return.
 
 Usage: $emdVS% = <i>stringvalue</i>
 <br>
@@ -242,9 +244,12 @@ Usage: !emdDA% = <i>destinationaddress</i>: !emdV32% = <i>value</i>: CALL empP32
 <br>
 <br>
 ## empPS% - Put String (0..255 characters)
-This procedure writes a string value to memory.
+This procedure writes a string value to memory. The original string
+must not contain a carriage-return (CR, 0DH) character, because
+BASIC will append one as a terminator when the $emdVS% construct
+is used in an assignment.
 
-Usage: !emdDA% = <i>destinationaddress</i>: !emdVS% = <i>stringvalue</i>: CALL empPS%
+Usage: !emdDA% = <i>destinationaddress</i>: $emdVS% = <i>stringvalue</i>: CALL empPS%
 <br>
 <br>
 ## empPF% - Put Float (40 bits)
@@ -290,8 +295,16 @@ Usage: !emdDA% = <i>destinationaddress</i>: !emdIS% = <i>itemsize</i>: !emdAI% =
 TBD
 <br>
 <br>
-## empCMB% - Copy memory block
-This procedure copies a memory block from one location to another location. It handles when the source block and the destination block overlap, if they do.
+## empCMBI% - Copy memory block by incrementing addresses
+This procedure copies a memory block from one location to another location, while incrementing addresses.
+ It expects that
+either the source block or the destination block do not overlap, or the source address is
+greater than (or equal to) the destination address. If you know that the two blocks overlap,
+and the source address is less than the destination address, use the empCMBD% routine instead.
+
+The source address must equal the <i>lowest</i> address in the source memory block.
+The destination address must equal the <i>lowest</i> address in the destination memory block.
+When this routine completes, the addresses will each point <i>just past</i> the high end of each block.
 
 This procedure copies bytes, so the repeat count is a number of bytes.
 To copy N entities of size M, set the repeat count to <i>N*M</i>.
@@ -299,7 +312,28 @@ To copy N entities of size M, set the repeat count to <i>N*M</i>.
 To set an address to the start of a particular array item, set the address
 to <i>A+I*S</i>, where A is the address of the array, I is the array index, and S is the size of one array item.
 
-Usage: !emdSA% = <i>sourceaddress</i>: !emdDA% = <i>destinationaddress</i>: !emdRC% = <i>repeatcount</i>: CALL empCMB%
+Usage: !emdSA% = <i>sourceaddress</i>: !emdDA% = <i>destinationaddress</i>: !emdRC% = <i>repeatcount</i>: CALL empCMBI%
+<br>
+<br>
+## empCMBD% - Copy memory block by decrementing addresses
+This procedure copies a memory block from one location to another location, while decrementing addresses.
+ It expects that
+either the source block or the destination block do not overlap, or the source address is
+less than (or equal to) the destination address. If you know that the two blocks overlap,
+and the source address is greater than the destination address, use the empCMBI% routine instead.
+
+The source address must equal the <i>highest</i> address in the source memory block, <i>plus 1</i>.
+The destination address must equal the <i>highest</i> address in the destination memory block, <i>plus 1</i>.
+When this routine completes, the addresses will each point <i>at</i> the low end of each block.
+
+This procedure copies bytes, so the repeat count is a number of bytes.
+To copy N entities of size M, set the repeat count to <i>N*M</i>.
+
+To set an address to the start of a particular array item, set the address
+to <i>A+I*S</i>, where A is the address of the array, I is the array index, and S is the size of one array item. Note that to copy
+array item #I, you would set the address to point to array item #(I+1), because this routine copies bytes in reverse.
+
+Usage: !emdSA% = <i>sourceaddress</i>: !emdDA% = <i>destinationaddress</i>: !emdRC% = <i>repeatcount</i>: CALL empCMBD%
 <br>
 <br>
 ## empXMB% - Exchange (swap) memory blocks

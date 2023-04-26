@@ -90,8 +90,8 @@
 <option name="useadddirectives" type="boolean" change-action="build">false</option>
 <option name="linkconfig" type="string" change-action="build">Standard</option>
 <option name="flashinfo" type="string" change-action="build">000000-0000FF</option>
-<option name="ram" type="string" change-action="build">0F000-0F113</option>
-<option name="rom" type="string" change-action="build">0F114-0FF00</option>
+<option name="ram" type="string" change-action="build">4FC00-4FD13</option>
+<option name="rom" type="string" change-action="build">4FD14-4FFFF</option>
 <option name="extio" type="string" change-action="build">000000-00FFFF</option>
 <option name="intio" type="string" change-action="build">000000-0000FF</option>
 </options>

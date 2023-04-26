@@ -30,9 +30,9 @@
 		XDEF	emfG8AI, emfG16AI, emfG24AI, emfG32AI, empGSAI, emfGFAI
 		XDEF	empP8, empP16, empP24, empP32, empPS, empPF
 		XDEF	empP8AI, empP16AI, empP24AI, empP32AI, empPSAI, empPFAI
-		XDEF	empCMB, empXMB, empZMB
+		XDEF	empCMBI, empCMBD, empXMB, empZMB
 
-		DEFINE	MY_DATA_SEG, SPACE=RAM, ORG=%0F000
+		DEFINE	MY_DATA_SEG, SPACE=RAM, ORG=%4FC00
 		SEGMENT	MY_DATA_SEG
 		ALIGN	4
 
@@ -54,7 +54,7 @@ emdIS:		ds		4	; Array item size parameter (range 1..256)
 emdRC:		ds		4	; Repeat count parameter
 
 
-		DEFINE	MY_CODE_SEG, SPACE=ROM, ORG=%0F114
+		DEFINE	MY_CODE_SEG, SPACE=ROM, ORG=%4FD14
 		SEGMENT	MY_CODE_SEG
 		ALIGN	4
 
@@ -70,11 +70,11 @@ loop1:		ld.lil	(hl),de
 
 emfG8AI: ; Get 8-bit item from array
 ; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG8AI%) 
-			call	src_index8
+			call.lil	src_index8
 emfG8: ; Get 8-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG8%)
 			ld.lil	ix,(emdSA)
-			ld.l	l,(ix)			; bits 7:0
+			ld.lil	l,(ix)			; bits 7:0
 			xor		a				; clears A' & F' sign bits
 			ld		h,a				; bits 15:8
 			exx
@@ -86,12 +86,12 @@ emfG8: ; Get 8-bit value
 
 emfG16AI: ; Get 16-bit item from array
 ; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG16IA%) 
-			call	src_index16
+			call.lil	src_index16
 emfG16: ; Get 16-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG16%)
 			ld.lil	ix,(emdSA)
-			ld.l	l,(ix)			; bits 7:0
-			ld.l	h,(ix+1)		; bits 15:8
+			ld.lil	l,(ix)			; bits 7:0
+			ld.lil	h,(ix+1)		; bits 15:8
 			xor		a				; clears A' & F' sign bits
 			exx
 			xor		a
@@ -102,49 +102,49 @@ emfG16: ; Get 16-bit value
 
 emfG24AI: ; Get 24-bit item from array
 ; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG24AI%) 
-			call	src_index24
+			call.lil	src_index24
 emfG24: ; Get 24-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG24%)
 			ld.lil	ix,(emdSA)
-			ld.l	l,(ix)			; bits 7:0
-			ld.l	h,(ix+1)		; bits 15:8
+			ld.lil	l,(ix)			; bits 7:0
+			ld.lil	h,(ix+1)		; bits 15:8
 			xor		a				; clears A' & F' sign bits
 			exx
 			xor		a
-			ld		l,(ix+2)		; bits 23:16
+			ld.lil	l,(ix+2)		; bits 23:16
 			ld		h,a				; bits 31:24
 			ld		c,a				; indicate integer result
 			ret
 
 emfG32AI: ; Get 32-bit item from array
 ; Usage: !emdSA% = sourceaddress: !emdAI% = array index: var%=USR(emfG32AI%) 
-			call	src_index32
+			call.lil	src_index32
 emfG32: ; Get 32-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG32%)
 			ld.lil	ix,(emdSA)
-			ld.l	l,(ix)			; bits 7:0
-			ld.l	h,(ix+1)		; bits 15:8
+			ld.lil	l,(ix)			; bits 7:0
+			ld.lil	h,(ix+1)		; bits 15:8
 			xor		a				; clears A' & F' sign bits
 			exx
 			xor		a
-			ld		l,(ix+2)		; bits 23:16
-			ld		h,(ix+3)		; bits 31:24
+			ld.lil	l,(ix+2)		; bits 23:16
+			ld.lil	h,(ix+3)		; bits 31:24
 			ld		c,a				; indicate integer result
 			ret
 
 empGSAI: ; Get String (0..255 characters) item from array
 ; Usage: !emdSA% = sourceaddress: !emdIS% = itemsize:
 ;        !emdAI% = array index: CALL empGSAI%: var$ = $emdVS%
-			call	src_index_s
+			call.lil	src_index_s
 empGS: ; Get String (0..255 characters)
 ; Usage: !emdSA% = sourceaddress: CALL empGS%: var$=$emdVS%
 			ld.lil	ix,(emdSA)
 			ld.lil	iy,emdVS
 			ld		b,0
 loop2:
-			ld.l	a,(ix)
-			ld.l	(iy),a
-			cp		a,0DH
+			ld.lil	a,(ix)
+			ld.lil	(iy),a
+			cp		a,0DH			; check for terminator
 			jr		z,done2
 			inc.l	ix
 			inc.l	iy
@@ -153,39 +153,39 @@ loop2:
 done2:		ret
 
 emfGFAI: ; Get Float (40 bits) item from array
-			call	src_index_f
+			call.lil	src_index_f
 emfGF: ; Get Float (40 bits)
 			ret
 
 empP8AI: ; Put 8-bit item into array
 ; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV8% = value: CALL empP8AI%
 ; Or:    !emdDA% = destinationaddress: !emdAI% = array index: ?emdV8% = value: CALL empP8AI%
-			call	dst_index8
+			call.lil	dst_index8
 empP8: ; Put 8-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV8% = value: CALL empP8%
 ; Or:    !emdDA% = destinationaddress: ?emdV8% = value: CALL empP8%
 			ld.lil	ix,emdV8
 			ld.lil	iy,(emdDA)
-			ld.l	a,(ix)
-			ld		(iy),a
+			ld.lil	a,(ix)
+			ld.lil	(iy),a
 			ret
 
 empP16AI: ; Put 16-bit item into array
 ; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV16% = value: CALL empP16AI%
-			call	dst_index16
+			call.lil	dst_index16
 empP16: ; Put 16-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV16% = value: CALL empP16%
 			ld.lil	ix,emdV16
 			ld.lil	iy,(emdDA)
-			ld.l	a,(ix)
-			ld		(iy),a
-			ld.l	a,(ix+1)
-			ld.l	(iy+1),a
+			ld.lil	a,(ix)
+			ld.lil	(iy),a
+			ld.lil	a,(ix+1)
+			ld.lil	(iy+1),a
 			ret
 
 empP24AI: ; Put 24-bit item into array
 ; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV24% = value: CALL empP24AI%
-			call	dst_index24
+			call.lil	dst_index24
 empP24: ; Put 24-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV24% = value: CALL empP24%
 			ld.lil	ix,emdV24
@@ -196,30 +196,30 @@ empP24: ; Put 24-bit value
 
 empP32AI: ; Put 32-bit item into array
 ; Usage: !emdDA% = destinationaddress: !emdAI% = array index: !emdV32% = value: CALL empP32AI%
-			call	dst_index32
+			call.lil	dst_index32
 empP32: ; Pet 32-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV32% = value: CALL empP32%
 			ld.lil	ix,emdV32
 			ld.lil	iy,(emdDA)
 			ld.lil	de,(ix)
 			ld.lil	(iy),de
-			ld.l	a,(ix+3)
-			ld.l	(iy+3),a
+			ld.lil	a,(ix+3)
+			ld.lil	(iy+3),a
 			ret
 
 empPSAI: ; Put String (0..255 characters) item into array
 ; Usage: !emdDA% = destinationaddress: !emdIS% = itemsize:
 ;        !emdAI% = array index: $emdVS% = stringvalue: CALL empPSAI%
-			call	dst_index_s
+			call.lil	dst_index_s
 empPS: ; Put String (0..255 characters)
 ; Usage: !emdDA% = destinationaddress: !emdVS% = stringvalue: CALL empPS%
 			ld.lil	ix,emdVS
 			ld.lil	iy,(emdDA)
 			ld		b,0
 loop3:
-			ld.l	a,(ix)
-			ld.l	(iy),a
-			cp		a,0DH
+			ld.lil	a,(ix)
+			ld.lil	(iy),a
+			cp		a,0DH		; check for terminator
 			jr		z,done3
 			inc.l	ix
 			inc.l	iy
@@ -228,53 +228,88 @@ loop3:
 done3:		ret
 
 empPFAI: ; Put Float (40 bits) item into array
-			call	dst_index_f
+			call.lil	dst_index_f
 empPF: ; Put Float (40 bits)
 			ret
 
-empCMB: ; Copy memory block
-; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empCMB%
+empCMBI:; Copy memory block by incrementing
+; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empCMBI%
+			ld.lil	hl,(emdSA)
+			ld.lil	de,(emdDA)
+			ld.lil	bc,(emdRC)
+			ldir.lil
+			ret
+
+empCMBD:; Copy memory block by decrementing
+; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empCMBD%
+			ld.lil	hl,(emdSA)
+			ld.lil	de,(emdDA)
+			ld.lil	bc,(emdRC)
+			dec.l	hl
+			dec.l	de
+			lddr.lil
 			ret
 
 empXMB: ; Exchange (swap) memory blocks
-; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = 
+; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empXMB%
+			ld.lil	ix,(emdSA)
+			ld.lil	iy,(emdDA)
+			ld.lil	bc,(emdRC)
+loop4:
+			ld.lil	a,(ix)
+			ld.lil  h,(iy)
+			ld.lil	(iy),a
+			ld.lil  (ix),h
+			inc.l	ix
+			inc.l	iy
+			dec.l	bc
+			jr		nz,loop4
 			ret
 
 empZMB: ; Zero memory block
 ; Usage: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empZMB%
+			ld.lil	iy,(emdDA)
+			ld.lil	bc,(emdRC)
+			xor		a
+loop5:
+			ld.lil	(iy),a
+			inc.l	ix
+			inc.l	iy
+			dec.l	bc
+			jr		nz,loop5
 			ret
 
 dst_index_f: ; Add 5x array index to the destination address
-			call	dst_index8
+			call.lil	dst_index8
 dst_index32: ; Add 4x array index to the destination address
-			call	dst_index8
+			call.lil	dst_index8
 dst_index24: ; Add 3x array index to the destination address
-			call	dst_index8
+			call.lil	dst_index8
 dst_index16: ; Add 2x array index to the destination address
-			call	dst_index8
+			call.lil	dst_index8
 dst_index8: ; Add 1x array index to the destination address
 			ld.lil	ix,emdDA
 			jr		add_to_addr
 src_index_f: ; Add 5x array index to the source address
-			call	src_index8
+			call.lil	src_index8
 src_index32: ; Add 4x array index to the source address
-			call	src_index8
+			call.lil	src_index8
 src_index24: ; Add 3x array index to the source address
-			call	src_index8
+			call.lil	src_index8
 src_index16: ; Add 2x array index to the source address
-			call	src_index8
+			call.lil	src_index8
 src_index8: ; Add 1x array index to the source address
 			ld.lil	ix,emdSA
 add_to_addr:
-			ld		a,(emdAI)
-			add		a,(ix)
-			ld		(ix),a
-			ld		a,(emdAI+1)
-			adc		a,(ix+1)
-			ld		(ix+1),a
-			ld		a,(emdAI+2)
-			adc		a,(ix+2)
-			ld		(ix+2),a
+			ld.lil	a,(emdAI)
+			add.lil	a,(ix)
+			ld.lil	(ix),a
+			ld.lil	a,(emdAI+1)
+			adc.lil	a,(ix+1)
+			ld.lil	(ix+1),a
+			ld.lil	a,(emdAI+2)
+			adc.lil	a,(ix+2)
+			ld.lil	(ix+2),a
 			ret.l
 
 dst_index_s: ; Add (item size)*(array index) to the destination address
@@ -294,42 +329,42 @@ src_index_s: ; Add (item size)*(array index) to the source address
 ;
 add_to_addr2:
 			push	ix				; save location of address parameter
-			ld		ix,emdAI
-			ld		iy,emdIS
+			ld.lil	ix,emdAI
+			ld.lil	iy,emdIS
 
-			ld		b,(ix+1)		; AIH
-			ld		c,(iy+1)		; ISH
+			ld.lil	b,(ix+1)		; AIH
+			ld.lil	c,(iy+1)		; ISH
 			mlt		bc				; AIH*ISH (*10000H)
 			exx
 
-			ld		b,(ix)			; AIL
-			ld		c,(iy)			; ISL
+			ld.lil	b,(ix)			; AIL
+			ld.lil	c,(iy)			; ISL
 			mlt		bc				; AIL*ISL (*1H)
 
-			ld		d,(ix+1)		; AIH
-			ld		e,(iy)			; ISL
+			ld.lil	d,(ix+1)		; AIH
+			ld.lil	e,(iy)			; ISL
 			mlt		de				; AIH*ISL (*100H)
 
-			ld		h,(ix)			; AIL
-			ld		l,(iy+1)		; ISH
+			ld.lil	h,(ix)			; AIL
+			ld.lil	l,(iy+1)		; ISH
 			mlt		hl				; AIL*ISH (*100H)
 			
 			pop		ix				; restore location of address parameter
 
 			ld		a,c				; AIL*ISL (L)
-			add		a,(ix)			; add address (bits 7:0)
-			ld		(ix),a			; save new address (bits 7:0)
+			add.lil	a,(ix)			; add address (bits 7:0)
+			ld.lil	(ix),a			; save new address (bits 7:0)
 			
 			ld		a,b				; AIL*ISL (H)
 			adc		a,e				; AIH*ISL (L)
 			adc		a,l				; AIL*ISH (L)
-			adc		a,(ix+1)		; add address (bits 15:8)
-			ld		(ix+1),a		; save new address (bits 15:8)
+			adc.lil	a,(ix+1)		; add address (bits 15:8)
+			ld.lil	(ix+1),a		; save new address (bits 15:8)
 
 			ld		a,d				; AIH*ISL (H)
 			adc		a,h				; AIL*ISH (H)
 			exx
 			adc		a,c				; AIH*ISH (L)
-			adc		a,(ix+2)		; add address (bits 23:16)
-			ld		(ix+2),a		; save new address (bits 23:16)
+			adc.lil	a,(ix+2)		; add address (bits 23:16)
+			ld.lil	(ix+2),a		; save new address (bits 23:16)
 			ret.l
