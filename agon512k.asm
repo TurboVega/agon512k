@@ -23,7 +23,7 @@
 ; SOFTWARE.
 
 
-		XREF	emdV8, emdV16, emdV24, emdV32, emdVF, emdVS
+		XREF	emdV8, emdV16, emdV24, emdV32, emdVS
 		XREF	emdSA, emdDA, emdAI, emdIS, emdRC
 
 		XDEF	empI, emfG8, emfG16, emfG24, emfG32, empGS, emfGF
@@ -43,7 +43,6 @@ emdV8:					; Value parameter as 8 bits
 emdV16:					; Value parameter as 16 bits
 emdV24:					; Value parameter as 24 bits
 emdV32:					; Value parameter as 32 bits
-empVF:					; Value parameter as float
 emdVS:		ds		256	; Value parameter as string
 
 ; These parameters are all separate from each other.
@@ -153,8 +152,10 @@ loop2:
 done2:		ret
 
 emfGFAI: ; Get Float (40 bits) item from array
+; Usage: !emdSA% = arrayaddress: !emdAI% = array index: CALL empGFAI%,floatvariable
 			call.lil	src_index_f
 emfGF: ; Get Float (40 bits)
+; Usage: !emdSA% = sourceaddress: CALL empGF%,floatvariable
 			ret
 
 empP8AI: ; Put 8-bit item into array
@@ -228,8 +229,10 @@ loop3:
 done3:		ret
 
 empPFAI: ; Put Float (40 bits) item into array
+; Usage: !emdDA% = arrayaddress: !emdAI% = array index: CALL empPFAI%,floatvariable
 			call.lil	dst_index_f
 empPF: ; Put Float (40 bits)
+; Usage: !emdDA% = destinationaddress: CALL empPF%,floatvariable
 			ret
 
 empCMBI:; Copy memory block by incrementing

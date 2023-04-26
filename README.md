@@ -134,12 +134,6 @@ the original string should not contain a carriage-return.
 Usage: $emdVS% = <i>stringvalue</i>
 <br>
 <br>
-## empVF% - Value parameter as float
-The procedure sets a float value that is required by some routines, as specified below.
-
-Usage: CALL empVF%, <i>floatvalue</i>
-<br>
-<br>
 ## empI% - Initialize upper RAM
 This procedure clears (to zero) the upper 448KB of memory.
 
