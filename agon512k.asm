@@ -59,20 +59,29 @@ emdRC:		ds		4	; Repeat count parameter
 
 empI: ; Initialize upper RAM
 ; Usage: CALL empI%
+
 			xor		a
-			ld.lil	ix,50000H
-			ld.lil	bc,70000H
-			ld.lil	iy,emdV24
+			ld.lil	ix,50000H	; just past BASIC's RAM
+			ld		b,06H		; for range &50000 to &AFFFF
+			ld		d,a
+			ld		e,a
 loop1:		ld.lil	(ix),a
 			inc.l	ix
-			dec.l	bc
-			ld.lil	(iy),bc
-			cp.lil	a,(iy)
+			dec		e
 			jr		nz,loop1
-			cp.lil	a,(iy+1)
+			dec		d
 			jr		nz,loop1
-			cp.lil	a,(iy+2)
+			dec		b
 			jr		nz,loop1
+
+			ld		d,C0H		; for range &B0000 to &BBFFF
+loop1b:		ld.lil	(ix),a
+			inc.l	ix
+			dec		e
+			jr		nz,loop1b
+			dec		d
+			jr		nz,loop1b
+
 			ld.lil	(emdDA),ix
 			ret
 
@@ -306,23 +315,30 @@ empXMB: ; Exchange (swap) memory blocks
 ; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empXMB%
 			ld.lil	ix,(emdSA)
 			ld.lil	hl,(emdDA)
-			ld.lil	bc,(emdRC)
-			ld.lil	iy,emdV24
-loop4:
+			ld.lil	iy,emdRC
+			ld		b,(iy+2)
+			ld		d,(iy+1)
+			ld		e,(iy)
+loop4:		
 			ld.lil	d,(ix)
 			ld.lil	a,(hl)
 			ld.lil	(hl),d
 			ld.lil  (ix),a
 			inc.l	ix
 			inc.l	hl
-			dec.l	bc
-			ld.lil	(iy),bc
-			cp.lil	a,(iy)
+
+			ld		a,e
+			sub		a,1
+			ld		a,d
+			sbc		a,0
+			ld		a,b
+			sbc		a,0
+
+			ld		a,b
+			or		a,d
+			or		a,e
 			jr		nz,loop4
-			cp.lil	a,(iy+1)
-			jr		nz,loop4
-			cp.lil	a,(iy+2)
-			jr		nz,loop4
+
 			ld.lil	(emdSA),ix
 			ld.lil	(emdDA),hl
 			ret
@@ -330,20 +346,28 @@ loop4:
 empZMB: ; Zero memory block
 ; Usage: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empZMB%
 			ld.lil	ix,(emdDA)
-			ld.lil	bc,(emdRC)
-			ld.lil	iy,emdV24
-			xor		a
+			ld.lil	iy,emdRC
+			ld		b,(iy+2)
+			ld		d,(iy+1)
+			ld		e,(iy)
 loop5:
+			xor		a
 			ld.lil	(ix),a
 			inc.l	ix
-			dec.l	bc
-			ld.lil	(iy),bc
-			cp.lil	a,(iy)
-			jr		nz,loop5
-			cp.lil	a,(iy+1)
-			jr		nz,loop5
-			cp.lil	a,(iy+2)
-			jr		nz,loop5
+
+			ld		a,e
+			sub		a,1
+			ld		a,d
+			sbc		a,0
+			ld		a,b
+			sbc		a,0
+
+			ld		a,b
+			or		a,d
+			or		a,e
+			jr		nz,loop4
+
+			ld.lil	(emdDA),ix
 			ret
 
 dst_index_f: ; Add 5x array index to the destination address
