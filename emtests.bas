@@ -4,6 +4,8 @@
 35 REM Using addresses in range &4FB00 to &4FBFF, just so we can use
 36 REM indirection to write/read test data in memory. Note indirection
 37 REM must use addresses in range &0F000 to &0F0FF, to correspond.
+38 REM NOTE: Some values are assigned to extended memory variables here,
+39 REM       just to be overwritten, to prove that the "get" functions work.
 
 40 !emdSA%=&4FB00: ?&FB00=&5A: PRINT "01a: ";~USR(emfG8%): PROC_wait
 45 !emdDA%=&4FB00: ?emdV8%=&11: CALL empP8%: PRINT "01b: ";~USR(emfG8%): PROC_wait
@@ -60,12 +62,19 @@
 194 !emdSA%=&8FF00: !emdDA%=&70025: !emdRC%=5: CALL empCMBI%: PRINT "16c: ";~!emdDA%: PROC_wait
 196 myfloat=9.0: !emdSA%=&70025: CALL empGF%,myfloat: PRINT "16d: ";myfloat: PROC_wait
 
+200 myfloat=11.111: !emdDA%=&60000: CALL empPF%,myfloat: PRINT "17a: ";myfloat: PROC_wait
+202 myfloat=22.222: !emdSA%=&60000: CALL empGF%,myfloat: PRINT "17b: ";myfloat: PROC_wait
+204 myfloat=33.333: !emdDA%=&68000: CALL empPF%,myfloat: PRINT "17c: ";myfloat: PROC_wait
+206 myfloat=44.444: !emdSA%=&68000: CALL empGF%,myfloat: PRINT "17d: ";myfloat: PROC_wait
+208 !emdSA%=&60000: !emdDA%=&68000: !emdRC%=5: CALL empXMB%: PRINT "17e: ";~!emdDA%: PROC_wait
+210 myfloat=55.555: !emdSA%=&60000: CALL empGF%,myfloat: PRINT "17f: ";myfloat: PROC_wait
+212 myfloat=66.666: !emdSA%=&68000: CALL empGF%,myfloat: PRINT "17g: ";myfloat: PROC_wait
+
 999 END
 1000 DEF PROC_wait
 1010 FOR I=0 TO 10000:NEXT I
 1020 ENDPROC
 65000 DEF PROC_empInit
-
 
 65010 emdAI%=&FC08
 65011 emdDA%=&FC04
