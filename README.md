@@ -7,6 +7,7 @@ The RAM resides at addresses &40000 to &BFFFF, with BASIC normally using the low
 <br>
 <br>
 Versions:<br>
+V0.2 - More tests added, but still testing "block" routines.
 V0.1 - Initial release of code for beta testing of a number of routines.
 <br>
 <br>
