@@ -10,8 +10,8 @@ Versions:<br>
 V0.1 - Initial release of code for beta testing of a number of routines.
 <br>
 <br>
-<b>NOTE: Only those routines that are specifically called (via CALL or USR) in "emtests.bas" have been tested some. Other routines have not yet been tested,
-but I'm working on that.</b>
+<b>NOTE: Only those routines that are specifically called (via CALL or USR) in "emtests.bas" have been tested some. I'm presently testing the "block"
+routines, so don't trust those quite yet.</b>
 <br>
 <br>
 NOTE: The provided routines do not modify or enhance the BASIC language, nor provide an easy way to allow you to write BASIC
