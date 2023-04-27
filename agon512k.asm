@@ -59,11 +59,12 @@ emdRC:		ds		4	; Repeat count parameter
 
 empI: ; Initialize upper RAM
 ; Usage: CALL empI%
-			ld.lil	de,0
-			ld.lil	hl,50000H
+			xor		a
+			ld.lil	ix,50000H
 			ld.lil	bc,70000H
-loop1:		ld.lil	(hl),de
-			dec.lil	bc
+loop1:		ld.lil	(ix),a
+			inc.l	ix
+			dec.l	bc
 			jr		nz,loop1
 			ret
 
@@ -84,7 +85,7 @@ emfG8: ; Get 8-bit value
 			ret
 
 emfG16AI: ; Get 16-bit item from array
-; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG16IA%) 
+; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG16AI%) 
 			call.lil	src_index16
 emfG16: ; Get 16-bit value
 ; Usage: !emdSA% = sourceaddress: var%=USR(emfG16%)
@@ -217,7 +218,7 @@ empP24: ; Put 24-bit value
 empP32AI: ; Put 32-bit item into array
 ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV32% = value: CALL empP32AI%
 			call.lil	dst_index32
-empP32: ; Pet 32-bit value
+empP32: ; Put 32-bit value
 ; Usage: !emdDA% = destinationaddress: !emdV32% = value: CALL empP32%
 			ld.lil	ix,emdV32
 			ld.lil	iy,(emdDA)
@@ -289,6 +290,8 @@ empCMBD:; Copy memory block by decrementing
 			dec.l	hl
 			dec.l	de
 			lddr.lil
+			inc.l	hl
+			inc.l	de
 			ret
 
 empXMB: ; Exchange (swap) memory blocks
