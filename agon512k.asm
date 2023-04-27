@@ -332,7 +332,7 @@ loop4:
 
 			or		a,d
 			or		a,e
-			;jr		nz,loop4
+			jr		nz,loop4
 
 			ld.lil	(emdSA),ix
 			ld.lil	(emdDA),hl
@@ -352,15 +352,19 @@ loop5:
 
 			ld		a,e
 			sub		a,1
+			ld		e,a
+			
 			ld		a,d
 			sbc		a,0
+			ld		d,a
+			
 			ld		a,b
 			sbc		a,0
+			ld		b,a
 
-			ld		a,b
 			or		a,d
 			or		a,e
-			jr		nz,loop4
+			jr		nz,loop5
 
 			ld.lil	(emdDA),ix
 			ret

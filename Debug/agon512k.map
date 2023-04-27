@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Thu Apr 27 11:17:36 2023
+DATE:      Thu Apr 27 16:59:35 2023
 PROCESSOR: assembler
 FILES:     .\agon512k.obj         
 
@@ -69,8 +69,8 @@ Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
 RAM                   D:04FB00    D:04FC13      114H      114H        0H
                                           (      276       276         0)
-ROM                   C:04FC14    C:04FF42      3ECH      32FH       BDH
-                                          (     1004       815       189)
+ROM                   C:04FC14    C:04FF46      3ECH      333H       B9H
+                                          (     1004       819       185)
 
 
 SEGMENTS WITHIN SPACE:
@@ -83,16 +83,16 @@ MY_DATA_SEG        absolute data          D:04FB00    D:04FC13      114h
 
 ROM                               Type        Base         Top      Size
 ------------------ ------------------- ----------- ----------- ---------
-MY_CODE_SEG        absolute data          C:04FC14    C:04FF42      32fh
+MY_CODE_SEG        absolute data          C:04FC14    C:04FF46      333h
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/27/2023 11:17:36
+Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/27/2023 16:59:35
 
     Name                                           Base         Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: MY_CODE_SEG                       C:04FC14    C:04FF42      32fh
+    Segment: MY_CODE_SEG                       C:04FC14    C:04FF46      333h
     Segment: MY_DATA_SEG                       D:04FB00    D:04FC13      114h
 
 EXTERNAL DEFINITIONS:
@@ -164,7 +164,7 @@ empPFAI                             C:04FDA0 agon512k        MY_CODE_SEG
 empPS                               C:04FD7C agon512k        MY_CODE_SEG                     
 empPSAI                             C:04FD77 agon512k        MY_CODE_SEG                     
 empXMB                              C:04FE04 agon512k        MY_CODE_SEG                     
-empZMB                              C:04FE49 agon512k        MY_CODE_SEG                     
+empZMB                              C:04FE4B agon512k        MY_CODE_SEG                     
 
 65 external symbol(s).
 
@@ -240,8 +240,8 @@ empZMB                            Defined     D:\AgonLight2\agon512k\agon512k.as
 
 OUTPUT CHECKSUM
 ===============
-agon512k.hex         016805
-agon512k.lod         016805
+agon512k.hex         016A17
+agon512k.lod         016A17
 
 
 
