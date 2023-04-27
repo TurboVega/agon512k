@@ -1,0 +1,423 @@
+Zilog eZ80 Macro Assembler Version 4.3 (19073001)                                   27-Apr-23     01:00:49     page:   1
+
+
+PC     Object              I  Line    Source 
+                           A     1    ; File:		agon512k.asm
+                           A     2    ; Purpose:	Use Agon 512KB external RAM in BASIC
+                           A     3    ; Copyright (C) 2023 by Curtis Whitley
+                           A     4    ;
+                           A     5    ; MIT License
+                           A     6    ;
+                           A     7    ; Permission is hereby granted, free of charge, to any person obtaining a copy
+                           A     8    ; of this software and associated documentation files (the "Software"), to deal
+                           A     9    ; in the Software without restriction, including without limitation the rights
+                           A    10    ; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                           A    11    ; copies of the Software, and to permit persons to whom the Software is
+                           A    12    ; furnished to do so, subject to the following conditions:
+                           A    13    ;
+                           A    14    ; The above copyright notice and this permission notice shall be included in all
+                           A    15    ; copies or substantial portions of the Software.
+                           A    16    ;
+                           A    17    ; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                           A    18    ; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                           A    19    ; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                           A    20    ; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                           A    21    ; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                           A    22    ; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                           A    23    ; SOFTWARE.
+                           A    24    
+                           A    25    
+                           A    26    		XREF	emdV8, emdV16, emdV24, emdV32, emdVS
+                           A    27    		XREF	emdSA, emdDA, emdAI, emdIS, emdRC
+                           A    28    
+                           A    29    		XDEF	empI, emfG8, emfG16, emfG24, emfG32, empGS, empGF
+                           A    30    		XDEF	emfG8AI, emfG16AI, emfG24AI, emfG32AI, empGSAI, empGFAI
+                           A    31    		XDEF	empP8, empP16, empP24, empP32, empPS, empPF
+                           A    32    		XDEF	empP8AI, empP16AI, empP24AI, empP32AI, empPSAI, empPFAI
+                           A    33    		XDEF	empCMBI, empCMBD, empXMB, empZMB
+                           A    34    
+                           A    35    		DEFINE	MY_DATA_SEG, SPACE=RAM, ORG=%4FB00
+                           A    36    		SEGMENT	MY_DATA_SEG
+                           A    37    		ALIGN	4
+                           A    38    
+                           A    39    		.ASSUME	ADL = 0
+                           A    40    
+                           A    41    ; These data values of various types are overlayed with each other.
+04FB00                     A    42    emdV8:					; Value parameter as 8 bits
+04FB00                     A    43    emdV16:					; Value parameter as 16 bits
+04FB00                     A    44    emdV24:					; Value parameter as 24 bits
+04FB00                     A    45    emdV32:					; Value parameter as 32 bits
+04FB00                     A    46    emdVS:		ds		256	; Value parameter as string
+                           A    47    
+                           A    48    ; These parameters are all separate from each other.
+04FC00                     A    49    emdSA:		ds		4	; Source address parameter
+04FC04                     A    50    emdDA:		ds		4	; Destination address parameter
+04FC08                     A    51    emdAI:		ds		4	; Array index parameter (range 0..65535)
+04FC0C                     A    52    emdIS:		ds		4	; Array item size parameter (range 1..256)
+04FC10                     A    53    emdRC:		ds		4	; Repeat count parameter
+                           A    54    
+                           A    55    
+                           A    56    		DEFINE	MY_CODE_SEG, SPACE=ROM, ORG=%4FC14
+                           A    57    		SEGMENT	MY_CODE_SEG
+                           A    58    		ALIGN	4
+                           A    59    
+04FC14                     A    60    empI: ; Initialize upper RAM
+                           A    61    ; Usage: CALL empI%
+04FC14 AF                  A    62    			xor		a
+04FC15 5BDD2100 0005       A    63    			ld.lil	ix,50000H
+04FC1B 5B010000 07         A    64    			ld.lil	bc,70000H
+04FC20 5BDD7700            A    65    loop1:		ld.lil	(ix),a
+04FC24 49DD23              A    66    			inc.l	ix
+04FC27 490B                A    67    			dec.l	bc
+04FC29 20 F5               A    68    			jr		nz,loop1
+04FC2B C9                  A    69    			ret
+                           A    70    
+04FC2C                     A    71    emfG8AI: ; Get 8-bit item from array
+                           A    72    ; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG8AI%) 
+04FC2C 5BCD 73 FE 04       A    73    			call.lil	src_index8
+04FC31                     A    74    emfG8: ; Get 8-bit value
+                           A    75    ; Usage: !emdSA% = sourceaddress: var%=USR(emfG8%)
+04FC31 5BDD2A00 FC04       A    76    			ld.lil	ix,(emdSA)
+04FC37 5BDD6E00            A    77    			ld.lil	l,(ix)			; bits 7:0
+04FC3B AF                  A    78    			xor		a				; clears A' & F' sign bits
+04FC3C 67                  A    79    			ld		h,a				; bits 15:8
+04FC3D D9                  A    80    			exx
+04FC3E AF                  A    81    			xor		a
+04FC3F 6F                  A    82    			ld		l,a				; bits 23:16
+04FC40 67                  A    83    			ld		h,a				; bits 31:24
+04FC41 4F                  A    84    			ld		c,a				; indicate integer result
+04FC42 C9                  A    85    			ret
+                           A    86    
+04FC43                     A    87    emfG16AI: ; Get 16-bit item from array
+                           A    88    ; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG16AI%) 
+04FC43 5BCD 6E FE 04       A    89    			call.lil	src_index16
+04FC48                     A    90    emfG16: ; Get 16-bit value
+                           A    91    ; Usage: !emdSA% = sourceaddress: var%=USR(emfG16%)
+04FC48 5BDD2A00 FC04       A    92    			ld.lil	ix,(emdSA)
+04FC4E 5BDD6E00            A    93    			ld.lil	l,(ix)			; bits 7:0
+04FC52 5BDD6601            A    94    			ld.lil	h,(ix+1)		; bits 15:8
+04FC56 AF                  A    95    			xor		a				; clears A' & F' sign bits
+04FC57 D9                  A    96    			exx
+04FC58 AF                  A    97    			xor		a
+04FC59 6F                  A    98    			ld		l,a				; bits 23:16
+04FC5A 67                  A    99    			ld		h,a				; bits 31:24
+04FC5B 4F                  A   100    			ld		c,a				; indicate integer result
+04FC5C C9                  A   101    			ret
+                           A   102    
+04FC5D                     A   103    emfG24AI: ; Get 24-bit item from array
+                           A   104    ; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG24AI%) 
+04FC5D 5BCD 69 FE 04       A   105    			call.lil	src_index24
+04FC62                     A   106    emfG24: ; Get 24-bit value
+                           A   107    ; Usage: !emdSA% = sourceaddress: var%=USR(emfG24%)
+04FC62 5BDD2A00 FC04       A   108    			ld.lil	ix,(emdSA)
+04FC68 5BDD6E00            A   109    			ld.lil	l,(ix)			; bits 7:0
+04FC6C 5BDD6601            A   110    			ld.lil	h,(ix+1)		; bits 15:8
+04FC70 AF                  A   111    			xor		a				; clears A' & F' sign bits
+04FC71 D9                  A   112    			exx
+04FC72 AF                  A   113    			xor		a
+04FC73 5BDD6E02            A   114    			ld.lil	l,(ix+2)		; bits 23:16
+04FC77 67                  A   115    			ld		h,a				; bits 31:24
+04FC78 4F                  A   116    			ld		c,a				; indicate integer result
+04FC79 C9                  A   117    			ret
+                           A   118    
+04FC7A                     A   119    emfG32AI: ; Get 32-bit item from array
+                           A   120    ; Usage: !emdSA% = arrayaddress: !emdAI% = array index: var%=USR(emfG32AI%) 
+04FC7A 5BCD 64 FE 04       A   121    			call.lil	src_index32
+04FC7F                     A   122    emfG32: ; Get 32-bit value
+                           A   123    ; Usage: !emdSA% = sourceaddress: var%=USR(emfG32%)
+04FC7F 5BDD2A00 FC04       A   124    			ld.lil	ix,(emdSA)
+04FC85 5BDD6E00            A   125    			ld.lil	l,(ix)			; bits 7:0
+04FC89 5BDD6601            A   126    			ld.lil	h,(ix+1)		; bits 15:8
+04FC8D AF                  A   127    			xor		a				; clears A' & F' sign bits
+04FC8E D9                  A   128    			exx
+04FC8F AF                  A   129    			xor		a
+04FC90 5BDD6E02            A   130    			ld.lil	l,(ix+2)		; bits 23:16
+04FC94 5BDD6603            A   131    			ld.lil	h,(ix+3)		; bits 31:24
+04FC98 4F                  A   132    			ld		c,a				; indicate integer result
+04FC99 C9                  A   133    			ret
+                           A   134    
+04FC9A                     A   135    empGSAI: ; Get String (0..255 characters) item from array
+                           A   136    ; Usage: !emdSA% = arrayaddress: !emdIS% = itemsize:
+                           A   137    ;        !emdAI% = array index: CALL empGSAI%: var$ = $emdVS%
+04FC9A 5BCD AA FE 04       A   138    			call.lil	src_index_s
+04FC9F                     A   139    empGS: ; Get String (0..255 characters)
+                           A   140    ; Usage: !emdSA% = sourceaddress: CALL empGS%: var$=$emdVS%
+04FC9F 5BDD2A00 FC04       A   141    			ld.lil	ix,(emdSA)
+04FCA5 5BFD2100 FB04       A   142    			ld.lil	iy,emdVS
+04FCAB 0600                A   143    			ld		b,0
+04FCAD                     A   144    loop2:
+04FCAD 5BDD7E00            A   145    			ld.lil	a,(ix)
+04FCB1 5BFD7700            A   146    			ld.lil	(iy),a
+04FCB5 FE0D                A   147    			cp		a,0DH			; check for terminator
+04FCB7 28 09               A   148    			jr		z,done2
+04FCB9 49DD23              A   149    			inc.l	ix
+04FCBC 49FD23              A   150    			inc.l	iy
+04FCBF 05                  A   151    			dec		b
+04FCC0 20 EB               A   152    			jr		nz,loop2
+04FCC2 C9                  A   153    done2:		ret
+                           A   154    
+04FCC3                     A   155    empGFAI: ; Get Float (40 bits) item from array
+                           A   156    ; Usage: !emdSA% = arrayaddress: !emdAI% = array index: CALL empGFAI%,floatvariable
+04FCC3 DDE5                A   157    			push	ix
+04FCC5 5BCD 5F FE 04       A   158    			call.lil	src_index_f
+04FCCA DDE1                A   159    			pop		ix
+04FCCC                     A   160    empGF: ; Get Float (40 bits)
+                           A   161    ; Usage: !emdSA% = sourceaddress: CALL empGF%,floatvariable
+04FCCC DD7E00              A   162    			ld		a,(ix)		; get # of parameters
+04FCCF FE01                A   163    			cp		a,1			; is there exactly 1 parameter?
+04FCD1 20 21               A   164    			jr		nz,skip		; go if no
+04FCD3 DD7E01              A   165    			ld		a,(ix+1)	; get parameter type code
+04FCD6 FE05                A   166    			cp		a,5			; is it a "real" (float)?
+04FCD8 20 1A               A   167    			jr		nz,skip		; go if no
+04FCDA DD3102              A   168    			ld		iy,(ix+2)	; get address of the parameter variable
+04FCDD 5BDD2A00 FC04       A   169    			ld.lil	ix,(emdSA)	; get stored float source address
+04FCE3 0605                A   170    			ld		b,5			; # of bytes to copy
+04FCE5                     A   171    loop6:
+04FCE5 5BDD7E00            A   172    			ld.lil	a,(ix)		; get src byte
+04FCE9 FD7700              A   173    			ld		(iy),a		; store dst byte
+04FCEC 49DD23              A   174    			inc.l	ix			; inc src ptr
+04FCEF FD23                A   175    			inc		iy			; inc dst ptr
+04FCF1 05                  A   176    			dec		b			; dec count
+04FCF2 20 F1               A   177    			jr		nz,loop6	; back if more to copy
+04FCF4                     A   178    skip:
+04FCF4 C9                  A   179    			ret
+                           A   180    
+04FCF5                     A   181    empP8AI: ; Put 8-bit item into array
+                           A   182    ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV8% = value: CALL empP8AI%
+                           A   183    ; Or:    !emdDA% = arrayaddress: !emdAI% = array index: ?emdV8% = value: CALL empP8AI%
+04FCF5 5BCD 57 FE 04       A   184    			call.lil	dst_index8
+04FCFA                     A   185    empP8: ; Put 8-bit value
+                           A   186    ; Usage: !emdDA% = destinationaddress: !emdV8% = value: CALL empP8%
+                           A   187    ; Or:    !emdDA% = destinationaddress: ?emdV8% = value: CALL empP8%
+04FCFA 5BDD2100 FB04       A   188    			ld.lil	ix,emdV8
+04FD00 5BFD2A04 FC04       A   189    			ld.lil	iy,(emdDA)
+04FD06 5BDD7E00            A   190    			ld.lil	a,(ix)
+04FD0A 5BFD7700            A   191    			ld.lil	(iy),a
+04FD0E C9                  A   192    			ret
+                           A   193    
+04FD0F                     A   194    empP16AI: ; Put 16-bit item into array
+                           A   195    ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV16% = value: CALL empP16AI
+04FD0F 5BCD 52 FE 04       A   196    			call.lil	dst_index16
+04FD14                     A   197    empP16: ; Put 16-bit value
+                           A   198    ; Usage: !emdDA% = destinationaddress: !emdV16% = value: CALL empP16%
+04FD14 5BDD2100 FB04       A   199    			ld.lil	ix,emdV16
+04FD1A 5BFD2A04 FC04       A   200    			ld.lil	iy,(emdDA)
+04FD20 5BDD7E00            A   201    			ld.lil	a,(ix)
+04FD24 5BFD7700            A   202    			ld.lil	(iy),a
+04FD28 5BDD7E01            A   203    			ld.lil	a,(ix+1)
+04FD2C 5BFD7701            A   204    			ld.lil	(iy+1),a
+04FD30 C9                  A   205    			ret
+                           A   206    
+04FD31                     A   207    empP24AI: ; Put 24-bit item into array
+                           A   208    ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV24% = value: CALL empP24AI
+04FD31 5BCD 4D FE 04       A   209    			call.lil	dst_index24
+04FD36                     A   210    empP24: ; Put 24-bit value
+                           A   211    ; Usage: !emdDA% = destinationaddress: !emdV24% = value: CALL empP24%
+04FD36 5BDD2100 FB04       A   212    			ld.lil	ix,emdV24
+04FD3C 5BFD2A04 FC04       A   213    			ld.lil	iy,(emdDA)
+04FD42 5BDD1700            A   214    			ld.lil	de,(ix)
+04FD46 5BFD1F00            A   215    			ld.lil	(iy),de
+04FD4A C9                  A   216    			ret
+                           A   217    
+04FD4B                     A   218    empP32AI: ; Put 32-bit item into array
+                           A   219    ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: !emdV32% = value: CALL empP32AI
+04FD4B 5BCD 48 FE 04       A   220    			call.lil	dst_index32
+04FD50                     A   221    empP32: ; Put 32-bit value
+                           A   222    ; Usage: !emdDA% = destinationaddress: !emdV32% = value: CALL empP32%
+04FD50 5BDD2100 FB04       A   223    			ld.lil	ix,emdV32
+04FD56 5BFD2A04 FC04       A   224    			ld.lil	iy,(emdDA)
+04FD5C 5BDD1700            A   225    			ld.lil	de,(ix)
+04FD60 5BFD1F00            A   226    			ld.lil	(iy),de
+04FD64 5BDD7E03            A   227    			ld.lil	a,(ix+3)
+04FD68 5BFD7703            A   228    			ld.lil	(iy+3),a
+04FD6C C9                  A   229    			ret
+                           A   230    
+04FD6D                     A   231    empPSAI: ; Put String (0..255 characters) item into array
+                           A   232    ; Usage: !emdDA% = arrayaddress: !emdIS% = itemsize:
+                           A   233    ;        !emdAI% = array index: $emdVS% = stringvalue: CALL empPSAI%
+04FD6D 5BCD A2 FE 04       A   234    			call.lil	dst_index_s
+04FD72                     A   235    empPS: ; Put String (0..255 characters)
+                           A   236    ; Usage: !emdDA% = destinationaddress: !emdVS% = stringvalue: CALL empPS%
+04FD72 5BDD2100 FB04       A   237    			ld.lil	ix,emdVS
+04FD78 5BFD2A04 FC04       A   238    			ld.lil	iy,(emdDA)
+04FD7E 0600                A   239    			ld		b,0
+04FD80                     A   240    loop3:
+04FD80 5BDD7E00            A   241    			ld.lil	a,(ix)
+04FD84 5BFD7700            A   242    			ld.lil	(iy),a
+04FD88 FE0D                A   243    			cp		a,0DH		; check for terminator
+04FD8A 28 09               A   244    			jr		z,done3
+04FD8C 49DD23              A   245    			inc.l	ix
+04FD8F 49FD23              A   246    			inc.l	iy
+04FD92 05                  A   247    			dec		b
+04FD93 20 EB               A   248    			jr		nz,loop3
+04FD95 C9                  A   249    done3:		ret
+                           A   250    
+04FD96                     A   251    empPFAI: ; Put Float (40 bits) item into array
+                           A   252    ; Usage: !emdDA% = arrayaddress: !emdAI% = array index: CALL empPFAI%,floatvariable
+04FD96 DDE5                A   253    			push	ix
+04FD98 5BCD 43 FE 04       A   254    			call.lil	dst_index_f
+04FD9D DDE1                A   255    			pop		ix
+04FD9F                     A   256    empPF: ; Put Float (40 bits)
+                           A   257    ; Usage: !emdDA% = destinationaddress: CALL empPF%,floatvariable
+04FD9F DD7E00              A   258    			ld		a,(ix)		; get # of parameters
+04FDA2 FE01                A   259    			cp		a,1			; is there exactly 1 parameter?
+04FDA4 20 21               A   260    			jr		nz,skip2	; go if no
+04FDA6 DD7E01              A   261    			ld		a,(ix+1)	; get parameter type code
+04FDA9 FE05                A   262    			cp		a,5			; is it a "real" (float)?
+04FDAB 20 1A               A   263    			jr		nz,skip2	; go if no
+04FDAD DD3702              A   264    			ld		ix,(ix+2)	; get address of the parameter variable
+04FDB0 5BFD2A04 FC04       A   265    			ld.lil	iy,(emdDA)	; get stored float destination address
+04FDB6 0605                A   266    			ld		b,5			; # of bytes to copy
+04FDB8                     A   267    loop7:
+04FDB8 DD7E00              A   268    			ld		a,(ix)		; get src byte
+04FDBB 5BFD7700            A   269    			ld.lil	(iy),a		; store dst byte
+04FDBF DD23                A   270    			inc		ix			; inc src ptr
+04FDC1 49FD23              A   271    			inc.l	iy			; inc dst ptr
+04FDC4 05                  A   272    			dec		b			; dec count
+04FDC5 20 F1               A   273    			jr		nz,loop7	; back if more to copy
+04FDC7                     A   274    skip2:
+04FDC7 C9                  A   275    			ret
+                           A   276    
+04FDC8                     A   277    empCMBI:; Copy memory block by incrementing
+                           A   278    ; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: 
+04FDC8 5B2A00FC 04         A   279    			ld.lil	hl,(emdSA)
+04FDCD 5BED5B04 FC04       A   280    			ld.lil	de,(emdDA)
+04FDD3 5BED4B10 FC04       A   281    			ld.lil	bc,(emdRC)
+04FDD9 5BEDB0              A   282    			ldir.lil
+04FDDC C9                  A   283    			ret
+                           A   284    
+04FDDD                     A   285    empCMBD:; Copy memory block by decrementing
+                           A   286    ; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: 
+04FDDD 5B2A00FC 04         A   287    			ld.lil	hl,(emdSA)
+04FDE2 5BED5B04 FC04       A   288    			ld.lil	de,(emdDA)
+04FDE8 5BED4B10 FC04       A   289    			ld.lil	bc,(emdRC)
+04FDEE 492B                A   290    			dec.l	hl
+04FDF0 491B                A   291    			dec.l	de
+04FDF2 5BEDB8              A   292    			lddr.lil
+04FDF5 4923                A   293    			inc.l	hl
+04FDF7 4913                A   294    			inc.l	de
+04FDF9 C9                  A   295    			ret
+                           A   296    
+04FDFA                     A   297    empXMB: ; Exchange (swap) memory blocks
+                           A   298    ; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: 
+04FDFA 5BDD2A00 FC04       A   299    			ld.lil	ix,(emdSA)
+04FE00 5BFD2A04 FC04       A   300    			ld.lil	iy,(emdDA)
+04FE06 5BED4B10 FC04       A   301    			ld.lil	bc,(emdRC)
+04FE0C                     A   302    loop4:
+04FE0C 5BDD7E00            A   303    			ld.lil	a,(ix)
+04FE10 5BFD6600            A   304    			ld.lil  h,(iy)
+04FE14 5BFD7700            A   305    			ld.lil	(iy),a
+04FE18 5BDD7400            A   306    			ld.lil  (ix),h
+04FE1C 49DD23              A   307    			inc.l	ix
+04FE1F 49FD23              A   308    			inc.l	iy
+04FE22 490B                A   309    			dec.l	bc
+04FE24 20 E6               A   310    			jr		nz,loop4
+04FE26 C9                  A   311    			ret
+                           A   312    
+04FE27                     A   313    empZMB: ; Zero memory block
+                           A   314    ; Usage: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empZMB%
+04FE27 5BFD2A04 FC04       A   315    			ld.lil	iy,(emdDA)
+04FE2D 5BED4B10 FC04       A   316    			ld.lil	bc,(emdRC)
+04FE33 AF                  A   317    			xor		a
+04FE34                     A   318    loop5:
+04FE34 5BFD7700            A   319    			ld.lil	(iy),a
+04FE38 49DD23              A   320    			inc.l	ix
+04FE3B 49FD23              A   321    			inc.l	iy
+04FE3E 490B                A   322    			dec.l	bc
+04FE40 20 F2               A   323    			jr		nz,loop5
+04FE42 C9                  A   324    			ret
+                           A   325    
+04FE43                     A   326    dst_index_f: ; Add 5x array index to the destination address
+04FE43 5BCD 57 FE 04       A   327    			call.lil	dst_index8
+04FE48                     A   328    dst_index32: ; Add 4x array index to the destination address
+04FE48 5BCD 57 FE 04       A   329    			call.lil	dst_index8
+04FE4D                     A   330    dst_index24: ; Add 3x array index to the destination address
+04FE4D 5BCD 57 FE 04       A   331    			call.lil	dst_index8
+04FE52                     A   332    dst_index16: ; Add 2x array index to the destination address
+04FE52 5BCD 57 FE 04       A   333    			call.lil	dst_index8
+04FE57                     A   334    dst_index8: ; Add 1x array index to the destination address
+04FE57 5BDD2104 FC04       A   335    			ld.lil	ix,emdDA
+04FE5D 18 1A               A   336    			jr		add_to_addr
+04FE5F                     A   337    src_index_f: ; Add 5x array index to the source address
+04FE5F 5BCD 73 FE 04       A   338    			call.lil	src_index8
+04FE64                     A   339    src_index32: ; Add 4x array index to the source address
+04FE64 5BCD 73 FE 04       A   340    			call.lil	src_index8
+04FE69                     A   341    src_index24: ; Add 3x array index to the source address
+04FE69 5BCD 73 FE 04       A   342    			call.lil	src_index8
+04FE6E                     A   343    src_index16: ; Add 2x array index to the source address
+04FE6E 5BCD 73 FE 04       A   344    			call.lil	src_index8
+04FE73                     A   345    src_index8: ; Add 1x array index to the source address
+04FE73 5BDD2100 FC04       A   346    			ld.lil	ix,emdSA
+04FE79                     A   347    add_to_addr:
+04FE79 5B3A08FC 04         A   348    			ld.lil	a,(emdAI)
+04FE7E 5BDD8600            A   349    			add.lil	a,(ix)
+04FE82 5BDD7700            A   350    			ld.lil	(ix),a
+04FE86 5B3A09FC 04         A   351    			ld.lil	a,(emdAI+1)
+04FE8B 5BDD8E01            A   352    			adc.lil	a,(ix+1)
+04FE8F 5BDD7701            A   353    			ld.lil	(ix+1),a
+04FE93 5B3A0AFC 04         A   354    			ld.lil	a,(emdAI+2)
+04FE98 5BDD8E02            A   355    			adc.lil	a,(ix+2)
+04FE9C 5BDD7702            A   356    			ld.lil	(ix+2),a
+04FEA0 49C9                A   357    			ret.l
+                           A   358    
+04FEA2                     A   359    dst_index_s: ; Add (item size)*(array index) to the destination address
+04FEA2 5BDD2104 FC04       A   360    			ld.lil	ix,emdDA
+04FEA8 18 06               A   361    			jr		add_to_addr2
+04FEAA                     A   362    src_index_s: ; Add (item size)*(array index) to the source address
+04FEAA 5BDD2100 FC04       A   363    			ld.lil	ix,emdSA
+                           A   364    ; The array index is limited to the range 0 to 65535 (&FFFF). The array item size
+                           A   365    ; is limited to the range 1 to 256. In order to compute the byte offset from the
+                           A   366    ; start of the array to a particular array item, we do a 16-bit by 16-bit multiplicatio
+                           A   367    ; and use the lower 24-bits of the resulting product. The MLT instruction can only
+                           A   368    ; multiply 8 bits by 8 bits, so we must use it several times.
+                           A   369    ;
+                           A   370    ; array index: [AIH][AIL]
+                           A   371    ; item size:   [ISH][ISL]
+                           A   372    ; item offset: AIL*ISL + AIH*ISL*100H + ISH*AIL*100H + AIH*ISH*10000H
+                           A   373    ;
+04FEB0                     A   374    add_to_addr2:
+04FEB0 DDE5                A   375    			push	ix				; save location of address parameter
+04FEB2 5BDD2108 FC04       A   376    			ld.lil	ix,emdAI
+04FEB8 5BFD210C FC04       A   377    			ld.lil	iy,emdIS
+                           A   378    
+04FEBE 5BDD4601            A   379    			ld.lil	b,(ix+1)		; AIH
+04FEC2 5BFD4E01            A   380    			ld.lil	c,(iy+1)		; ISH
+04FEC6 ED4C                A   381    			mlt		bc				; AIH*ISH (*10000H)
+04FEC8 D9                  A   382    			exx
+                           A   383    
+04FEC9 5BDD4600            A   384    			ld.lil	b,(ix)			; AIL
+04FECD 5BFD4E00            A   385    			ld.lil	c,(iy)			; ISL
+04FED1 ED4C                A   386    			mlt		bc				; AIL*ISL (*1H)
+                           A   387    
+04FED3 5BDD5601            A   388    			ld.lil	d,(ix+1)		; AIH
+04FED7 5BFD5E00            A   389    			ld.lil	e,(iy)			; ISL
+04FEDB ED5C                A   390    			mlt		de				; AIH*ISL (*100H)
+                           A   391    
+04FEDD 5BDD6600            A   392    			ld.lil	h,(ix)			; AIL
+04FEE1 5BFD6E01            A   393    			ld.lil	l,(iy+1)		; ISH
+04FEE5 ED6C                A   394    			mlt		hl				; AIL*ISH (*100H)
+                           A   395    			
+04FEE7 DDE1                A   396    			pop		ix				; restore location of address parameter
+                           A   397    
+04FEE9 79                  A   398    			ld		a,c				; AIL*ISL (L)
+04FEEA 5BDD8600            A   399    			add.lil	a,(ix)			; add address (bits 7:0)
+04FEEE 5BDD7700            A   400    			ld.lil	(ix),a			; save new address (bits 7:0)
+                           A   401    			
+04FEF2 78                  A   402    			ld		a,b				; AIL*ISL (H)
+04FEF3 8B                  A   403    			adc		a,e				; AIH*ISL (L)
+04FEF4 8D                  A   404    			adc		a,l				; AIL*ISH (L)
+04FEF5 5BDD8E01            A   405    			adc.lil	a,(ix+1)		; add address (bits 15:8)
+04FEF9 5BDD7701            A   406    			ld.lil	(ix+1),a		; save new address (bits 15:8)
+                           A   407    
+04FEFD 7A                  A   408    			ld		a,d				; AIH*ISL (H)
+04FEFE 8C                  A   409    			adc		a,h				; AIL*ISH (H)
+04FEFF D9                  A   410    			exx
+04FF00 89                  A   411    			adc		a,c				; AIH*ISH (L)
+04FF01 5BDD8E02            A   412    			adc.lil	a,(ix+2)		; add address (bits 23:16)
+04FF05 5BDD7702            A   413    			ld.lil	(ix+2),a		; save new address (bits 23:16)
+04FF09 49C9                A   414    			ret.l
+
+
+Errors: 0
+Warnings: 0
+Lines Assembled: 415
