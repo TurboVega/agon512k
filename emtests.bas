@@ -66,12 +66,12 @@
 202 myfloat=22.222: !emdSA%=&60000: CALL empGF%,myfloat: PRINT "17b: ";myfloat: PROC_wait
 204 myfloat=33.333: !emdDA%=&68000: CALL empPF%,myfloat: PRINT "17c: ";myfloat: PROC_wait
 206 myfloat=44.444: !emdSA%=&68000: CALL empGF%,myfloat: PRINT "17d: ";myfloat: PROC_wait
-207 PRINT "waiting...": PROC_wait: PRINT "waiting...": PROC_wait
-208 PRINT "exchanging..."
 209 !emdSA%=&60000: !emdDA%=&68000: !emdRC%=5: CALL empXMB%: PRINT "17e: ";~!emdSA%;" ";~!emdDA%: PROC_wait
-210 PRINT "exchanged."
 211 myfloat=55.555: !emdSA%=&60000: CALL empGF%,myfloat: PRINT "17f: ";myfloat: PROC_wait
 212 myfloat=66.666: !emdSA%=&68000: CALL empGF%,myfloat: PRINT "17g: ";myfloat: PROC_wait
+
+220 !emdDA%=&68000: !emdRC%=5: CALL empZMB%: PRINT "18a: ";~!emdDA%: PROC_wait
+221 myfloat=55.555: !emdSA%=&68000: CALL empGF%,myfloat: PRINT "18b: ";myfloat: PROC_wait
 
 999 END
 1000 DEF PROC_wait
@@ -89,93 +89,92 @@
 65017 emdV32%=&FB00
 65018 emdV8%=&FB00
 65019 emdVS%=&FB00
-65020 emfG16%=&FC61
-65021 emfG16AI%=&FC5C
-65022 emfG24%=&FC7B
-65023 emfG24AI%=&FC76
-65024 emfG32%=&FC98
-65025 emfG32AI%=&FC93
-65026 emfG8%=&FC4A
-65027 emfG8AI%=&FC45
-65028 empCMBD%=&FDF6
-65029 empCMBI%=&FDE1
-65030 empGF%=&FCE5
-65031 empGFAI%=&FCDC
-65032 empGS%=&FCB8
-65033 empGSAI%=&FCB3
+65020 emfG16%=&FC52
+65021 emfG16AI%=&FC4D
+65022 emfG24%=&FC6C
+65023 emfG24AI%=&FC67
+65024 emfG32%=&FC89
+65025 emfG32AI%=&FC84
+65026 emfG8%=&FC3B
+65027 emfG8AI%=&FC36
+65028 empCMBD%=&FDE7
+65029 empCMBI%=&FDD2
+65030 empGF%=&FCD6
+65031 empGFAI%=&FCCD
+65032 empGS%=&FCA9
+65033 empGSAI%=&FCA4
 65034 empI%=&FC14
-65035 empP16%=&FD2D
-65036 empP16AI%=&FD28
-65037 empP24%=&FD4F
-65038 empP24AI%=&FD4A
-65039 empP32%=&FD69
-65040 empP32AI%=&FD64
-65041 empP8%=&FD13
-65042 empP8AI%=&FD0E
-65043 empPF%=&FDB8
-65044 empPFAI%=&FDAF
-65045 empPS%=&FD8B
-65046 empPSAI%=&FD86
-65047 empXMB%=&FE13
-65048 empZMB%=&FE58
+65035 empP16%=&FD1E
+65036 empP16AI%=&FD19
+65037 empP24%=&FD40
+65038 empP24AI%=&FD3B
+65039 empP32%=&FD5A
+65040 empP32AI%=&FD55
+65041 empP8%=&FD04
+65042 empP8AI%=&FCFF
+65043 empPF%=&FDA9
+65044 empPFAI%=&FDA0
+65045 empPS%=&FD7C
+65046 empPSAI%=&FD77
+65047 empXMB%=&FE04
+65048 empZMB%=&FE49
 
 65290 emBase%=&40000
-65300 FOR address%=&FC14 TO &FF51
+65300 FOR address%=&FC14 TO &FF42
 65310   READ assembly%
 65320   ?address%=assembly%
 65330 NEXT address%
 
 65400 DATA &AF, &5B, &DD, &21, &00, &00, &05, &06, &06, &57, &5F, &5B, &DD, &77, &00, &49
-65401 DATA &DD, &23, &1D, &20, &F6, &15, &20, &F3, &05, &20, &F0, &16, &C0, &5B, &DD, &77
-65402 DATA &00, &49, &DD, &23, &1D, &20, &F6, &15, &20, &F3, &5B, &DD, &22, &04, &FC, &04
-65403 DATA &C9, &5B, &CD, &BA, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &DD, &6E, &00
-65404 DATA &AF, &67, &D9, &AF, &6F, &67, &4F, &C9, &5B, &CD, &B5, &FE, &04, &5B, &DD, &2A
-65405 DATA &00, &FC, &04, &5B, &DD, &6E, &00, &5B, &DD, &66, &01, &AF, &D9, &AF, &6F, &67
-65406 DATA &4F, &C9, &5B, &CD, &B0, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &DD, &6E
-65407 DATA &00, &5B, &DD, &66, &01, &AF, &D9, &AF, &5B, &DD, &6E, &02, &67, &4F, &C9, &5B
-65408 DATA &CD, &AB, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &DD, &6E, &00, &5B, &DD
-65409 DATA &66, &01, &AF, &D9, &AF, &5B, &DD, &6E, &02, &5B, &DD, &66, &03, &4F, &C9, &5B
-65410 DATA &CD, &F1, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &FD, &21, &00, &FB, &04
-65411 DATA &06, &00, &5B, &DD, &7E, &00, &5B, &FD, &77, &00, &FE, &0D, &28, &09, &49, &DD
-65412 DATA &23, &49, &FD, &23, &05, &20, &EB, &C9, &DD, &E5, &5B, &CD, &A6, &FE, &04, &DD
-65413 DATA &E1, &DD, &7E, &00, &FE, &01, &20, &21, &DD, &7E, &01, &FE, &05, &20, &1A, &DD
-65414 DATA &31, &02, &5B, &DD, &2A, &00, &FC, &04, &06, &05, &5B, &DD, &7E, &00, &FD, &77
-65415 DATA &00, &49, &DD, &23, &FD, &23, &05, &20, &F1, &C9, &5B, &CD, &9E, &FE, &04, &5B
-65416 DATA &DD, &21, &00, &FB, &04, &5B, &FD, &2A, &04, &FC, &04, &5B, &DD, &7E, &00, &5B
-65417 DATA &FD, &77, &00, &C9, &5B, &CD, &99, &FE, &04, &5B, &DD, &21, &00, &FB, &04, &5B
-65418 DATA &FD, &2A, &04, &FC, &04, &5B, &DD, &7E, &00, &5B, &FD, &77, &00, &5B, &DD, &7E
-65419 DATA &01, &5B, &FD, &77, &01, &C9, &5B, &CD, &94, &FE, &04, &5B, &DD, &21, &00, &FB
-65420 DATA &04, &5B, &FD, &2A, &04, &FC, &04, &5B, &DD, &17, &00, &5B, &FD, &1F, &00, &C9
-65421 DATA &5B, &CD, &8F, &FE, &04, &5B, &DD, &21, &00, &FB, &04, &5B, &FD, &2A, &04, &FC
-65422 DATA &04, &5B, &DD, &17, &00, &5B, &FD, &1F, &00, &5B, &DD, &7E, &03, &5B, &FD, &77
-65423 DATA &03, &C9, &5B, &CD, &E9, &FE, &04, &5B, &DD, &21, &00, &FB, &04, &5B, &FD, &2A
-65424 DATA &04, &FC, &04, &06, &00, &5B, &DD, &7E, &00, &5B, &FD, &77, &00, &FE, &0D, &28
-65425 DATA &09, &49, &DD, &23, &49, &FD, &23, &05, &20, &EB, &C9, &DD, &E5, &5B, &CD, &8A
-65426 DATA &FE, &04, &DD, &E1, &DD, &7E, &00, &FE, &01, &20, &21, &DD, &7E, &01, &FE, &05
-65427 DATA &20, &1A, &DD, &37, &02, &5B, &FD, &2A, &04, &FC, &04, &06, &05, &DD, &7E, &00
-65428 DATA &5B, &FD, &77, &00, &DD, &23, &49, &FD, &23, &05, &20, &F1, &C9, &5B, &2A, &00
-65429 DATA &FC, &04, &5B, &ED, &5B, &04, &FC, &04, &5B, &ED, &4B, &10, &FC, &04, &5B, &ED
-65430 DATA &B0, &C9, &5B, &2A, &00, &FC, &04, &5B, &ED, &5B, &04, &FC, &04, &5B, &ED, &4B
-65431 DATA &10, &FC, &04, &49, &2B, &49, &1B, &5B, &ED, &B8, &49, &23, &49, &13, &C9, &5B
-65432 DATA &DD, &2A, &00, &FC, &04, &5B, &2A, &04, &FC, &04, &5B, &FD, &21, &10, &FC, &04
-65433 DATA &FD, &46, &02, &FD, &56, &01, &FD, &5E, &00, &5B, &DD, &56, &00, &5B, &7E, &5B
-65434 DATA &72, &5B, &DD, &77, &00, &49, &DD, &23, &49, &23, &7B, &D6, &01, &7A, &DE, &00
-65435 DATA &78, &DE, &00, &78, &B2, &B3, &20, &E1, &5B, &DD, &22, &00, &FC, &04, &5B, &22
-65436 DATA &04, &FC, &04, &C9, &5B, &DD, &2A, &04, &FC, &04, &5B, &FD, &21, &10, &FC, &04
-65437 DATA &FD, &46, &02, &FD, &56, &01, &FD, &5E, &00, &AF, &5B, &DD, &77, &00, &49, &DD
-65438 DATA &23, &7B, &D6, &01, &7A, &DE, &00, &78, &DE, &00, &78, &B2, &B3, &20, &AA, &5B
-65439 DATA &DD, &22, &04, &FC, &04, &C9, &5B, &CD, &9E, &FE, &04, &5B, &CD, &9E, &FE, &04
-65440 DATA &5B, &CD, &9E, &FE, &04, &5B, &CD, &9E, &FE, &04, &5B, &DD, &21, &04, &FC, &04
-65441 DATA &18, &1A, &5B, &CD, &BA, &FE, &04, &5B, &CD, &BA, &FE, &04, &5B, &CD, &BA, &FE
-65442 DATA &04, &5B, &CD, &BA, &FE, &04, &5B, &DD, &21, &00, &FC, &04, &5B, &3A, &08, &FC
-65443 DATA &04, &5B, &DD, &86, &00, &5B, &DD, &77, &00, &5B, &3A, &09, &FC, &04, &5B, &DD
-65444 DATA &8E, &01, &5B, &DD, &77, &01, &5B, &3A, &0A, &FC, &04, &5B, &DD, &8E, &02, &5B
-65445 DATA &DD, &77, &02, &49, &C9, &5B, &DD, &21, &04, &FC, &04, &18, &06, &5B, &DD, &21
-65446 DATA &00, &FC, &04, &DD, &E5, &5B, &DD, &21, &08, &FC, &04, &5B, &FD, &21, &0C, &FC
-65447 DATA &04, &5B, &DD, &46, &01, &5B, &FD, &4E, &01, &ED, &4C, &D9, &5B, &DD, &46, &00
-65448 DATA &5B, &FD, &4E, &00, &ED, &4C, &5B, &DD, &56, &01, &5B, &FD, &5E, &00, &ED, &5C
-65449 DATA &5B, &DD, &66, &00, &5B, &FD, &6E, &01, &ED, &6C, &DD, &E1, &79, &5B, &DD, &86
-65450 DATA &00, &5B, &DD, &77, &00, &78, &8B, &8D, &5B, &DD, &8E, &01, &5B, &DD, &77, &01
-65451 DATA &7A, &8C, &D9, &89, &5B, &DD, &8E, &02, &5B, &DD, &77, &02, &49, &C9
+65401 DATA &DD, &23, &1D, &20, &F6, &15, &20, &F3, &05, &20, &F0, &5B, &DD, &22, &04, &FC
+65402 DATA &04, &C9, &5B, &CD, &AB, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &DD, &6E
+65403 DATA &00, &AF, &67, &D9, &AF, &6F, &67, &4F, &C9, &5B, &CD, &A6, &FE, &04, &5B, &DD
+65404 DATA &2A, &00, &FC, &04, &5B, &DD, &6E, &00, &5B, &DD, &66, &01, &AF, &D9, &AF, &6F
+65405 DATA &67, &4F, &C9, &5B, &CD, &A1, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &DD
+65406 DATA &6E, &00, &5B, &DD, &66, &01, &AF, &D9, &AF, &5B, &DD, &6E, &02, &67, &4F, &C9
+65407 DATA &5B, &CD, &9C, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &DD, &6E, &00, &5B
+65408 DATA &DD, &66, &01, &AF, &D9, &AF, &5B, &DD, &6E, &02, &5B, &DD, &66, &03, &4F, &C9
+65409 DATA &5B, &CD, &E2, &FE, &04, &5B, &DD, &2A, &00, &FC, &04, &5B, &FD, &21, &00, &FB
+65410 DATA &04, &06, &00, &5B, &DD, &7E, &00, &5B, &FD, &77, &00, &FE, &0D, &28, &09, &49
+65411 DATA &DD, &23, &49, &FD, &23, &05, &20, &EB, &C9, &DD, &E5, &5B, &CD, &97, &FE, &04
+65412 DATA &DD, &E1, &DD, &7E, &00, &FE, &01, &20, &21, &DD, &7E, &01, &FE, &05, &20, &1A
+65413 DATA &DD, &31, &02, &5B, &DD, &2A, &00, &FC, &04, &06, &05, &5B, &DD, &7E, &00, &FD
+65414 DATA &77, &00, &49, &DD, &23, &FD, &23, &05, &20, &F1, &C9, &5B, &CD, &8F, &FE, &04
+65415 DATA &5B, &DD, &21, &00, &FB, &04, &5B, &FD, &2A, &04, &FC, &04, &5B, &DD, &7E, &00
+65416 DATA &5B, &FD, &77, &00, &C9, &5B, &CD, &8A, &FE, &04, &5B, &DD, &21, &00, &FB, &04
+65417 DATA &5B, &FD, &2A, &04, &FC, &04, &5B, &DD, &7E, &00, &5B, &FD, &77, &00, &5B, &DD
+65418 DATA &7E, &01, &5B, &FD, &77, &01, &C9, &5B, &CD, &85, &FE, &04, &5B, &DD, &21, &00
+65419 DATA &FB, &04, &5B, &FD, &2A, &04, &FC, &04, &5B, &DD, &17, &00, &5B, &FD, &1F, &00
+65420 DATA &C9, &5B, &CD, &80, &FE, &04, &5B, &DD, &21, &00, &FB, &04, &5B, &FD, &2A, &04
+65421 DATA &FC, &04, &5B, &DD, &17, &00, &5B, &FD, &1F, &00, &5B, &DD, &7E, &03, &5B, &FD
+65422 DATA &77, &03, &C9, &5B, &CD, &DA, &FE, &04, &5B, &DD, &21, &00, &FB, &04, &5B, &FD
+65423 DATA &2A, &04, &FC, &04, &06, &00, &5B, &DD, &7E, &00, &5B, &FD, &77, &00, &FE, &0D
+65424 DATA &28, &09, &49, &DD, &23, &49, &FD, &23, &05, &20, &EB, &C9, &DD, &E5, &5B, &CD
+65425 DATA &7B, &FE, &04, &DD, &E1, &DD, &7E, &00, &FE, &01, &20, &21, &DD, &7E, &01, &FE
+65426 DATA &05, &20, &1A, &DD, &37, &02, &5B, &FD, &2A, &04, &FC, &04, &06, &05, &DD, &7E
+65427 DATA &00, &5B, &FD, &77, &00, &DD, &23, &49, &FD, &23, &05, &20, &F1, &C9, &5B, &2A
+65428 DATA &00, &FC, &04, &5B, &ED, &5B, &04, &FC, &04, &5B, &ED, &4B, &10, &FC, &04, &5B
+65429 DATA &ED, &B0, &C9, &5B, &2A, &00, &FC, &04, &5B, &ED, &5B, &04, &FC, &04, &5B, &ED
+65430 DATA &4B, &10, &FC, &04, &49, &2B, &49, &1B, &5B, &ED, &B8, &49, &23, &49, &13, &C9
+65431 DATA &5B, &DD, &2A, &00, &FC, &04, &5B, &2A, &04, &FC, &04, &5B, &FD, &21, &10, &FC
+65432 DATA &04, &FD, &46, &02, &FD, &56, &01, &FD, &5E, &00, &5B, &DD, &4E, &00, &5B, &7E
+65433 DATA &5B, &71, &5B, &DD, &77, &00, &49, &DD, &23, &49, &23, &7B, &D6, &01, &5F, &7A
+65434 DATA &DE, &00, &57, &78, &DE, &00, &47, &B2, &B3, &5B, &DD, &22, &00, &FC, &04, &5B
+65435 DATA &22, &04, &FC, &04, &C9, &5B, &DD, &2A, &04, &FC, &04, &5B, &FD, &21, &10, &FC
+65436 DATA &04, &FD, &46, &02, &FD, &56, &01, &FD, &5E, &00, &AF, &5B, &DD, &77, &00, &49
+65437 DATA &DD, &23, &7B, &D6, &01, &7A, &DE, &00, &78, &DE, &00, &78, &B2, &B3, &20, &AA
+65438 DATA &5B, &DD, &22, &04, &FC, &04, &C9, &5B, &CD, &8F, &FE, &04, &5B, &CD, &8F, &FE
+65439 DATA &04, &5B, &CD, &8F, &FE, &04, &5B, &CD, &8F, &FE, &04, &5B, &DD, &21, &04, &FC
+65440 DATA &04, &18, &1A, &5B, &CD, &AB, &FE, &04, &5B, &CD, &AB, &FE, &04, &5B, &CD, &AB
+65441 DATA &FE, &04, &5B, &CD, &AB, &FE, &04, &5B, &DD, &21, &00, &FC, &04, &5B, &3A, &08
+65442 DATA &FC, &04, &5B, &DD, &86, &00, &5B, &DD, &77, &00, &5B, &3A, &09, &FC, &04, &5B
+65443 DATA &DD, &8E, &01, &5B, &DD, &77, &01, &5B, &3A, &0A, &FC, &04, &5B, &DD, &8E, &02
+65444 DATA &5B, &DD, &77, &02, &49, &C9, &5B, &DD, &21, &04, &FC, &04, &18, &06, &5B, &DD
+65445 DATA &21, &00, &FC, &04, &DD, &E5, &5B, &DD, &21, &08, &FC, &04, &5B, &FD, &21, &0C
+65446 DATA &FC, &04, &5B, &DD, &46, &01, &5B, &FD, &4E, &01, &ED, &4C, &D9, &5B, &DD, &46
+65447 DATA &00, &5B, &FD, &4E, &00, &ED, &4C, &5B, &DD, &56, &01, &5B, &FD, &5E, &00, &ED
+65448 DATA &5C, &5B, &DD, &66, &00, &5B, &FD, &6E, &01, &ED, &6C, &DD, &E1, &79, &5B, &DD
+65449 DATA &86, &00, &5B, &DD, &77, &00, &78, &8B, &8D, &5B, &DD, &8E, &01, &5B, &DD, &77
+65450 DATA &01, &7A, &8C, &D9, &89, &5B, &DD, &8E, &02, &5B, &DD, &77, &02, &49, &C9
 
 65499 ENDPROC

@@ -73,15 +73,6 @@ loop1:		ld.lil	(ix),a
 			jr		nz,loop1
 			dec		b
 			jr		nz,loop1
-
-			ld		d,C0H		; for range &B0000 to &BBFFF
-loop1b:		ld.lil	(ix),a
-			inc.l	ix
-			dec		e
-			jr		nz,loop1b
-			dec		d
-			jr		nz,loop1b
-
 			ld.lil	(emdDA),ix
 			ret
 
@@ -320,24 +311,28 @@ empXMB: ; Exchange (swap) memory blocks
 			ld		d,(iy+1)
 			ld		e,(iy)
 loop4:		
-			ld.lil	d,(ix)
+			ld.lil	c,(ix)
 			ld.lil	a,(hl)
-			ld.lil	(hl),d
+			ld.lil	(hl),c
 			ld.lil  (ix),a
 			inc.l	ix
 			inc.l	hl
 
 			ld		a,e
 			sub		a,1
+			ld		e,a
+			
 			ld		a,d
 			sbc		a,0
+			ld		d,a
+			
 			ld		a,b
 			sbc		a,0
+			ld		b,a
 
-			ld		a,b
 			or		a,d
 			or		a,e
-			jr		nz,loop4
+			;jr		nz,loop4
 
 			ld.lil	(emdSA),ix
 			ld.lil	(emdDA),hl
