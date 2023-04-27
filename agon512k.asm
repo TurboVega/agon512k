@@ -62,10 +62,18 @@ empI: ; Initialize upper RAM
 			xor		a
 			ld.lil	ix,50000H
 			ld.lil	bc,70000H
+			ld.lil	iy,emdV24
 loop1:		ld.lil	(ix),a
 			inc.l	ix
 			dec.l	bc
+			ld.lil	(iy),bc
+			cp.lil	a,(iy)
 			jr		nz,loop1
+			cp.lil	a,(iy+1)
+			jr		nz,loop1
+			cp.lil	a,(iy+2)
+			jr		nz,loop1
+			ld.lil	(emdDA),ix
 			ret
 
 emfG8AI: ; Get 8-bit item from array
@@ -297,29 +305,44 @@ empCMBD:; Copy memory block by decrementing
 empXMB: ; Exchange (swap) memory blocks
 ; Usage: !emdSA% = sourceaddress: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empXMB%
 			ld.lil	ix,(emdSA)
-			ld.lil	iy,(emdDA)
+			ld.lil	hl,(emdDA)
 			ld.lil	bc,(emdRC)
+			ld.lil	iy,emdV24
 loop4:
-			ld.lil	a,(ix)
-			ld.lil  h,(iy)
-			ld.lil	(iy),a
-			ld.lil  (ix),h
+			ld.lil	d,(ix)
+			ld.lil	a,(hl)
+			ld.lil	(hl),d
+			ld.lil  (ix),a
 			inc.l	ix
-			inc.l	iy
+			inc.l	hl
 			dec.l	bc
+			ld.lil	(iy),bc
+			cp.lil	a,(iy)
 			jr		nz,loop4
+			cp.lil	a,(iy+1)
+			jr		nz,loop4
+			cp.lil	a,(iy+2)
+			jr		nz,loop4
+			ld.lil	(emdSA),ix
+			ld.lil	(emdDA),hl
 			ret
 
 empZMB: ; Zero memory block
 ; Usage: !emdDA% = destinationaddress: !emdRC% = repeatcount: CALL empZMB%
-			ld.lil	iy,(emdDA)
+			ld.lil	ix,(emdDA)
 			ld.lil	bc,(emdRC)
+			ld.lil	iy,emdV24
 			xor		a
 loop5:
-			ld.lil	(iy),a
+			ld.lil	(ix),a
 			inc.l	ix
-			inc.l	iy
 			dec.l	bc
+			ld.lil	(iy),bc
+			cp.lil	a,(iy)
+			jr		nz,loop5
+			cp.lil	a,(iy+1)
+			jr		nz,loop5
+			cp.lil	a,(iy+2)
 			jr		nz,loop5
 			ret
 

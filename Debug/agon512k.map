@@ -4,7 +4,7 @@ Copyright (C) 1999-2008 Zilog, Inc. All Rights Reserved
 
 LINK MAP:
 
-DATE:      Thu Apr 27 05:05:51 2023
+DATE:      Thu Apr 27 06:44:03 2023
 PROCESSOR: assembler
 FILES:     .\agon512k.obj         
 
@@ -69,8 +69,8 @@ Space                     Base         Top      Size      Used    Unused
 ------------------ ----------- ----------- --------- --------- ---------
 RAM                   D:04FB00    D:04FC13      114H      114H        0H
                                           (      276       276         0)
-ROM                   C:04FC14    C:04FF0A      3ECH      2F7H       F5H
-                                          (     1004       759       245)
+ROM                   C:04FC14    C:04FF60      3ECH      34DH       9FH
+                                          (     1004       845       159)
 
 
 SEGMENTS WITHIN SPACE:
@@ -83,16 +83,16 @@ MY_DATA_SEG        absolute data          D:04FB00    D:04FC13      114h
 
 ROM                               Type        Base         Top      Size
 ------------------ ------------------- ----------- ----------- ---------
-MY_CODE_SEG        absolute data          C:04FC14    C:04FF0A      2f7h
+MY_CODE_SEG        absolute data          C:04FC14    C:04FF60      34dh
 
 SEGMENTS WITHIN MODULES:
 ========================
 
-Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/27/2023 01:00:49
+Module: D:\AgonLight2\agon512k\agon512k.asm (File: agon512k.obj) Version: 1:0 04/27/2023 06:44:02
 
     Name                                           Base         Top      Size
     --------------------------------------- ----------- ----------- ---------
-    Segment: MY_CODE_SEG                       C:04FC14    C:04FF0A      2f7h
+    Segment: MY_CODE_SEG                       C:04FC14    C:04FF60      34dh
     Segment: MY_DATA_SEG                       D:04FB00    D:04FC13      114h
 
 EXTERNAL DEFINITIONS:
@@ -136,35 +136,35 @@ emdV24                              D:04FB00 agon512k        MY_DATA_SEG
 emdV32                              D:04FB00 agon512k        MY_DATA_SEG                     
 emdV8                               D:04FB00 agon512k        MY_DATA_SEG                     
 emdVS                               D:04FB00 agon512k        MY_DATA_SEG                     
-emfG16                              C:04FC48 agon512k        MY_CODE_SEG                     
-emfG16AI                            C:04FC43 agon512k        MY_CODE_SEG                     
-emfG24                              C:04FC62 agon512k        MY_CODE_SEG                     
-emfG24AI                            C:04FC5D agon512k        MY_CODE_SEG                     
-emfG32                              C:04FC7F agon512k        MY_CODE_SEG                     
-emfG32AI                            C:04FC7A agon512k        MY_CODE_SEG                     
-emfG8                               C:04FC31 agon512k        MY_CODE_SEG                     
-emfG8AI                             C:04FC2C agon512k        MY_CODE_SEG                     
-empCMBD                             C:04FDDD agon512k        MY_CODE_SEG                     
-empCMBI                             C:04FDC8 agon512k        MY_CODE_SEG                     
-empGF                               C:04FCCC agon512k        MY_CODE_SEG                     
-empGFAI                             C:04FCC3 agon512k        MY_CODE_SEG                     
-empGS                               C:04FC9F agon512k        MY_CODE_SEG                     
-empGSAI                             C:04FC9A agon512k        MY_CODE_SEG                     
+emfG16                              C:04FC68 agon512k        MY_CODE_SEG                     
+emfG16AI                            C:04FC63 agon512k        MY_CODE_SEG                     
+emfG24                              C:04FC82 agon512k        MY_CODE_SEG                     
+emfG24AI                            C:04FC7D agon512k        MY_CODE_SEG                     
+emfG32                              C:04FC9F agon512k        MY_CODE_SEG                     
+emfG32AI                            C:04FC9A agon512k        MY_CODE_SEG                     
+emfG8                               C:04FC51 agon512k        MY_CODE_SEG                     
+emfG8AI                             C:04FC4C agon512k        MY_CODE_SEG                     
+empCMBD                             C:04FDFD agon512k        MY_CODE_SEG                     
+empCMBI                             C:04FDE8 agon512k        MY_CODE_SEG                     
+empGF                               C:04FCEC agon512k        MY_CODE_SEG                     
+empGFAI                             C:04FCE3 agon512k        MY_CODE_SEG                     
+empGS                               C:04FCBF agon512k        MY_CODE_SEG                     
+empGSAI                             C:04FCBA agon512k        MY_CODE_SEG                     
 empI                                C:04FC14 agon512k        MY_CODE_SEG                     
-empP16                              C:04FD14 agon512k        MY_CODE_SEG                     
-empP16AI                            C:04FD0F agon512k        MY_CODE_SEG                     
-empP24                              C:04FD36 agon512k        MY_CODE_SEG                     
-empP24AI                            C:04FD31 agon512k        MY_CODE_SEG                     
-empP32                              C:04FD50 agon512k        MY_CODE_SEG                     
-empP32AI                            C:04FD4B agon512k        MY_CODE_SEG                     
-empP8                               C:04FCFA agon512k        MY_CODE_SEG                     
-empP8AI                             C:04FCF5 agon512k        MY_CODE_SEG                     
-empPF                               C:04FD9F agon512k        MY_CODE_SEG                     
-empPFAI                             C:04FD96 agon512k        MY_CODE_SEG                     
-empPS                               C:04FD72 agon512k        MY_CODE_SEG                     
-empPSAI                             C:04FD6D agon512k        MY_CODE_SEG                     
-empXMB                              C:04FDFA agon512k        MY_CODE_SEG                     
-empZMB                              C:04FE27 agon512k        MY_CODE_SEG                     
+empP16                              C:04FD34 agon512k        MY_CODE_SEG                     
+empP16AI                            C:04FD2F agon512k        MY_CODE_SEG                     
+empP24                              C:04FD56 agon512k        MY_CODE_SEG                     
+empP24AI                            C:04FD51 agon512k        MY_CODE_SEG                     
+empP32                              C:04FD70 agon512k        MY_CODE_SEG                     
+empP32AI                            C:04FD6B agon512k        MY_CODE_SEG                     
+empP8                               C:04FD1A agon512k        MY_CODE_SEG                     
+empP8AI                             C:04FD15 agon512k        MY_CODE_SEG                     
+empPF                               C:04FDBF agon512k        MY_CODE_SEG                     
+empPFAI                             C:04FDB6 agon512k        MY_CODE_SEG                     
+empPS                               C:04FD92 agon512k        MY_CODE_SEG                     
+empPSAI                             C:04FD8D agon512k        MY_CODE_SEG                     
+empXMB                              C:04FE1A agon512k        MY_CODE_SEG                     
+empZMB                              C:04FE66 agon512k        MY_CODE_SEG                     
 
 65 external symbol(s).
 
@@ -240,8 +240,8 @@ empZMB                            Defined     D:\AgonLight2\agon512k\agon512k.as
 
 OUTPUT CHECKSUM
 ===============
-agon512k.hex         014C63
-agon512k.lod         014C63
+agon512k.hex         017706
+agon512k.lod         017706
 
 
 
