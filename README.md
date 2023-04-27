@@ -104,7 +104,7 @@ Usage: !emdIS% = <i>itemsize</i>
 <br>
 <br>
 ## emdRC% - Repeat count parameter
-This parameter is a 24-bit repeate count that is required by some routines, as specified below.
+This parameter is a 24-bit repeat count that is required by some routines, as specified below.
 
 Usage: !emdRC% = <i>repeatcount</i>
 <br>
@@ -193,7 +193,7 @@ Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emf
 ## emfG16AI% - Get 16-bit item from array
 This function reads a 16-bit array item from memory.
 
-Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG16IA%) 
+Usage: !emdSA% = <i>arrayaddress</i>: !emdAI% = <i>array index</i>: var%=USR(emfG16AI%) 
 <br>
 <br>
 ## emfG24AI% - Get 24-bit item from array
@@ -243,7 +243,7 @@ This procedure writes a 24-bit value to memory.
 Usage: !emdDA% = <i>destinationaddress</i>: !emdV24% = <i>value</i>: CALL empP24%
 <br>
 <br>
-## empP32% - Pet 32-bit value
+## empP32% - Put 32-bit value
 This procedure writes a 32-bit value to memory.
 
 Usage: !emdDA% = <i>destinationaddress</i>: !emdV32% = <i>value</i>: CALL empP32%
