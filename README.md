@@ -1,18 +1,21 @@
 # agon512k
 <b>Access 512KB RAM from within BASIC on AgonLight (TM)</b>
 
+<b>Memory:</b> BASIC (64KB) + CUSTOM (384KB) + MOS (64KB)
+
 This collection of assembler functions provide access to the extended memory (including and beyond the first 64KB) attached to the EZ80 CPU.
-The RAM resides at addresses &40000 to &BFFFF, with BASIC normally using the lower 64KB (&40000 to &4FFFF). Now, you have another 448KB of RAM accessible from BASIC, ranging from
-&50000 to &BFFFF.
+The entire external RAM resides at addresses &40000 to &BFFFF, with BASIC normally using the lower 64KB (&40000 to &4FFFF), and MOS using the upper 64KB (&B0000 to &BFFFF). Now, you have another 384KB of RAM accessible from BASIC, ranging from
+&50000 to &AFFFF. You can access any part of the whole 512KB, if you are <i>very</i> careful not to clobber
+memory that will cause BASIC or MOS to crash.
+
+For example, the empCMBI% procedure, detailed further below, is designed to copy memory blocks, and can be
+used to copy between RAM in the BASIC area (lower 64KB), and RAM in the extended area (above 64KB).
 <br>
 <br>
 Versions:<br>
+V0.3 - 27-Apr-2023 - All tests performed to the extent designated by the "emtests.bas" program.<br>
 V0.2 - More tests added, but still testing "block" routines.<br>
 V0.1 - Initial release of code for beta testing of a number of routines.
-<br>
-<br>
-<b>NOTE: Only those routines that are specifically called (via CALL or USR) in "emtests.bas" have been tested some. I'm presently testing the "block"
-routines, so don't trust those quite yet.</b>
 <br>
 <br>
 NOTE: The provided routines do not modify or enhance the BASIC language, nor provide an easy way to allow you to write BASIC
@@ -76,7 +79,7 @@ Usage: PROC_empInit
 This parameter is a 24-bit source address that is required by some routines, as specified below.
 To access the first 64KB of memory, the address must be
 in the range &40000 to &4FFFF, not &00000 to &0FFFF.
-Any address in the range &40000 to &BFFFF is allowed.
+Any address in the range &40000 to &BFFFF is allowed. <i>Be careful when specifying addresses within the BASIC or MOS areas!</i>
 
 Usage: !emdSA% = <i>sourceaddress</i>
 <br>
@@ -86,6 +89,7 @@ This parameter is a 24-bit destination address that is required by some routines
 To access the first 64KB of memory, the address must be
 in the range &40000 to &4FFFF, not &00000 to &0FFFF.
 Any address in the range &40000 to &BFFFF is allowed.
+<i>Be careful when specifying addresses within the BASIC or MOS areas!</i>
 
 Usage: !emdDA% = <i>destinationaddress</i>
 <br>
