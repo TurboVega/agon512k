@@ -13,6 +13,7 @@ used to copy between RAM in the BASIC area (lower 64KB), and RAM in the extended
 <br>
 <br>
 Versions:<br>
+V0.4 - 30-Apr-2023 - Couple of doc edits; no code changes.
 V0.3 - 27-Apr-2023 - All tests performed to the extent designated by the "emtests.bas" program.<br>
 V0.2 - More tests added, but still testing "block" routines.<br>
 V0.1 - Initial release of code for beta testing of a number of routines.
@@ -26,7 +27,7 @@ write large programs with lots of data.
 <br>
 The assembler functions can read or write the entire memory range, implying that you should be very careful not to clobber
 any memory used by BASIC, unless you know what effect it will have. It is up to you how to arrange or manage the upper memory.
-No allocation, deallocation, or garbage collection is provided. You simply call routines that write or read using specific addresses determine by your application.
+No allocation, deallocation, or garbage collection is provided. You simply call routines that write or read using specific addresses determined by your application.
 <br>
 <br>
 In the following descriptions, the prefix "emp" means "extended memory procedure". The prefix "emf" means "extended memory function". The prefix "emd" means "extended memory data", and refers to a data parameter
@@ -148,7 +149,7 @@ Usage: $emdVS% = <i>stringvalue</i>
 <br>
 <br>
 ## empI% - Initialize upper RAM
-This procedure clears (to zero) the upper 448KB of memory.
+This procedure clears (to zero) the middle 384KB of memory.
 
 Usage: CALL empI%
 <br>
